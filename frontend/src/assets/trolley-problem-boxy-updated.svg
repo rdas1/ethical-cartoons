@@ -116,13 +116,13 @@
       <path d="M773.743 83.1597C774.968 96.2109 776.091 109.179 778.081 122.141C779.006 128.16 779.892 134.19 780.461 140.253C780.503 140.702 780.934 141.887 780.587 141.6C779.653 140.825 779.567 139.39 778.925 138.36" fill="none" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="7.11036"/>
       <path d="M445.247 222.653C447.73 216.253 442.472 223.613 441.46 225.725C438.734 231.415 437.103 237.425 434.962 243.313C431.242 253.542 428.116 264.308 423.606 274.26C421.532 278.835 420.16 278.298 421.671 282.591" fill="none" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="7.11036"/>
     </g>
-    <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); visibility: hidden;" d="M 12.756 147.012 C 22.682 151.111 360.16 233.6 370.029 237.93">
+    <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); visibility: hidden;" d="M 12.756 147.012 C 22.682 151.111 360.16 233.6 370.029 237.93" id="SharedPath">
       <title>SharedPath</title>
     </path>
-    <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); visibility: hidden;" d="M 369.523 236.833 C 379.449 240.932 716.927 323.421 726.796 327.751">
+    <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); visibility: hidden;" d="M 370.029 237.93 C 379.449 240.932 716.927 323.421 726.796 327.751" id="BottomPath">
       <title>BottomPath</title>
     </path>
-    <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); visibility: hidden;" d="M 363.665 236.86 C 366.372 180.049 878.792 70.787 775.764 108.894">
+    <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); visibility: hidden;" d="M 370.029 237.93 C 366.372 180.049 878.792 70.787 775.764 108.894" id="TopPath">
       <title>TopPath</title>
     </path>
   </g>
