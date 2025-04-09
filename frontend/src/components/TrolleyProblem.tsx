@@ -54,15 +54,36 @@ export default function TrolleyProblem() {
         ? `${sharedD} ${topD.replace(/^M[^ ]+ [^ ]+/, '')}`
         : `${sharedD} ${bottomD.replace(/^M[^ ]+ [^ ]+/, '')}`
   
-      gsap.to(trolleyRef.current, {
-        motionPath: {
-            path: fullD, // replace with bottom or top
-            align: shared,
-            alignOrigin: [0.5, 0.5],
-            autoRotate: true        },
-        duration: 3,
-        ease: 'power1.inOut',
-      })
+        const tl = gsap.timeline();
+
+        tl.to(trolleyRef.current, {
+            motionPath: {
+              path: fullD,
+              align: shared,
+              alignOrigin: [0.5, 0.5],
+              autoRotate: true,
+              start: 0.1,
+              end: 1,
+            },
+            duration: 3,
+            ease: 'power1.inOut',
+          }, 'move');
+        
+          tl.call(() => {
+            const victims = document.querySelector(
+              track === 'bottom' ? '#one-person' : '#one-person_2'
+            ) as SVGGElement;
+            const splat = document.querySelector(
+              track === 'bottom' ? '#splat-x5' : '#splat'
+            ) as SVGGElement;
+          
+            if (victims && splat) {
+              gsap.to(victims, { opacity: 0, duration: 0.3 });
+              splat.setAttribute('visibility', 'visible');
+              gsap.fromTo(splat, { opacity: 0 }, { opacity: 1, duration: 0.3 });
+            }
+          }, [], 'move+=1.8'); // 1.8 seconds into the trolley movement
+                  
     }, [track])
 
   return (
