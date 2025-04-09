@@ -38,7 +38,7 @@ export default function IntroModule() {
       {/* Page 3: Summary or Response Form */}
       <section className="h-screen w-full flex items-center justify-center scroll-snap-start bg-white p-4">
         <div className="max-w-2xl w-full text-center">
-          <h2 className="text-2xl font-semibold mb-4">What would you do?</h2>
+          <h2 className="text-2xl font-semibold mb-4">What's the ethical difference between these two scenarios?</h2>
           <p className="text-gray-600">
             [We'll ask you to explain your thinking after the scenarios.]
           </p>
