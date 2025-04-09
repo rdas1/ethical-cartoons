@@ -14,11 +14,12 @@ export default function IntroModule() {
         <NavBar />
 
       {/* Page 1: Trolley Problem */}
-      <section className="h-screen w-full flex items-center justify-center scroll-snap-start bg-white p-4">
+      <section className="h-screen w-full flex items-center justify-center scroll-snap-start bg-white">
         <div className="max-w-3xl w-full text-center">
-          <h2 className="text-3xl font-semibold mb-4">The Trolley Problem</h2>
+          <h2 className="text-3xl font-semibold mb-2">The Trolley Problem</h2>
+          <p>(Inspired by Neal Agarwal's <Link to="https://neal.fun/absurd-trolley-problems/" className="underline">Absurd Trolley Problems</Link>)</p>
           {/* Interactive component will go here */}
-          <div className="border rounded-lg p-4 shadow-sm bg-gray-100">
+          <div className="mt-4">
             <TrolleyProblem />
             {/* <p className="mb-2">[Interactive trolley problem placeholder]</p> */}
           </div>

@@ -17,21 +17,15 @@ export default function TrolleyProblem() {
         const bottom = document.querySelector('#BottomPath') as SVGPathElement;
       
         if (!shared || !top || !bottom) return;
-      
-        const sharedD = shared.getAttribute('d')!;
-        const topD = top.getAttribute('d')!;
-        const bottomD = bottom.getAttribute('d')!;
-      
-        const fullD = `${sharedD} ${bottomD.replace(/^M[^ ]+ [^ ]+/, '')}`; // default to bottom track
-      
+            
         gsap.set(trolleyRef.current, {
           motionPath: {
             path: shared,
             align: shared,
             alignOrigin: [0.5, 0.5],
             autoRotate: true,
-            start: 0.1,
-            end: 0.1, // Align only; no movement
+            start: 0.12,
+            end: 0.12, // Align only; no movement
           }
         });
       }, []);      
@@ -62,7 +56,7 @@ export default function TrolleyProblem() {
               align: shared,
               alignOrigin: [0.5, 0.5],
               autoRotate: true,
-              start: 0.1,
+              start: 0.05,
               end: 1,
             },
             duration: 3,
@@ -87,13 +81,17 @@ export default function TrolleyProblem() {
     }, [track])
 
   return (
-    <div className="space-y-4 p-4">
+    <div className="space-y-4">
       <div className="space-x-2">
-        <Button onClick={() => setTrack('bottom')} disabled={track !== null}>Bottom Track</Button>
-        <Button onClick={() => setTrack('top')} disabled={track !== null}>Top Track</Button>
+        <Button onClick={() => setTrack('top')} disabled={track !== null}>Pull the Lever</Button>
+        <Button onClick={() => setTrack('bottom')} disabled={track !== null}>Do Nothing</Button>
       </div>
 
-      <svg viewBox="0 0 800 400" className="w-full h-[500px]">
+      <div text-black bg-white border-red>
+        A trolley is heading towards five people tied to the tracks. You can pull a lever to divert it to another track, where one person is tied up. What do you do?
+      </div>
+
+      <svg viewBox="0 0 800 400" className="w-full h-[400px]">
         <g id="one-person">
         <g opacity="1">
         <g opacity="1">
