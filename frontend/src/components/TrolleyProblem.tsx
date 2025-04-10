@@ -8,6 +8,9 @@ gsap.registerPlugin(MotionPathPlugin)
 export default function TrolleyProblem() {
     const trolleyRef = useRef<SVGSVGElement>(null)
     const [track, setTrack] = useState<'top' | 'bottom' | null>(null)
+    const [hasActivated, setHasActivated] = useState(false)
+    const [isAnimating, setIsAnimating] = useState(false)
+
   
     useEffect(() => {
         if (!trolleyRef.current) return;
@@ -48,7 +51,10 @@ export default function TrolleyProblem() {
         ? `${sharedD} ${topD.replace(/^M[^ ]+ [^ ]+/, '')}`
         : `${sharedD} ${bottomD.replace(/^M[^ ]+ [^ ]+/, '')}`
   
-        const tl = gsap.timeline();
+        const tl = gsap.timeline({
+            onStart: () => setIsAnimating(true),
+            onComplete: () => setIsAnimating(false),
+          })
 
         tl.to(trolleyRef.current, {
             motionPath: {
@@ -80,15 +86,63 @@ export default function TrolleyProblem() {
                   
     }, [track])
 
+    const handleReset = () => {
+        const shared = document.querySelector('#SharedPath') as SVGPathElement
+        const one = document.querySelector('#one-person') as SVGGElement
+        const five = document.querySelector('#one-person_2') as SVGGElement
+        const splat = document.querySelector('#splat') as SVGGElement
+        const splatX5 = document.querySelector('#splat-x5') as SVGGElement
+      
+        if (!trolleyRef.current || !shared || !one || !five || !splat || !splatX5) return
+      
+        // Reset trolley position
+        gsap.set(trolleyRef.current, {
+          motionPath: {
+            path: shared,
+            align: shared,
+            alignOrigin: [0.5, 0.5],
+            autoRotate: true,
+            start: 0.12,
+            end: 0.12,
+          },
+        })
+      
+        // Restore victims
+        gsap.set(one, { opacity: 1 })
+        gsap.set(five, { opacity: 1 })
+      
+        // Hide splats
+        splat.setAttribute('visibility', 'hidden')
+        splatX5.setAttribute('visibility', 'hidden')
+        gsap.set([splat, splatX5], { opacity: 0 })
+      
+        // Allow interaction again
+        setTrack(null)
+        setHasActivated(false)
+      }
+      
+
   return (
     <div className="space-y-4">
       <div className="space-x-2">
-        <Button onClick={() => setTrack('top')} disabled={track !== null}>Pull the Lever</Button>
-        <Button onClick={() => setTrack('bottom')} disabled={track !== null}>Do Nothing</Button>
+        <Button onClick={() => {
+                    setTrack('top')
+                    setHasActivated(true)
+                }} 
+                disabled={track !== null}>Pull the Lever</Button>
+        <Button onClick={() => {
+            setTrack('bottom')
+            setHasActivated(true)
+        }} disabled={track !== null}>Do Nothing</Button>
+        {hasActivated && (
+        <Button variant="outline" onClick={handleReset} disabled={isAnimating}>
+            Reset
+        </Button>
+        )}
       </div>
 
       <div text-black bg-white border-red>
-        A trolley is heading towards five people tied to the tracks. You can pull a lever to divert it to another track, where one person is tied up. What do you do?
+        A trolley is heading towards <b>five people</b> tied to the tracks.<br/>You can pull a lever to divert it to another track, where <b>one person</b> is tied up.<br/><br/>What do you do?
       </div>
 
       <svg viewBox="0 0 800 400" className="w-full h-[400px]">
