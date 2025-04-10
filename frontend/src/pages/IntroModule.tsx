@@ -1,4 +1,5 @@
 import NavBar from "@/components/NavBar";
+import TransplantProblem from "@/components/TransplantProblem";
 import TrolleyProblem from "@/components/TrolleyProblem";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -31,7 +32,7 @@ export default function IntroModule() {
         <div className="max-w-3xl w-full text-center">
           <h2 className="text-3xl font-semibold mb-4">The Transplant Problem</h2>
           <p className="text-lg text-gray-700">
-            [Coming soon: Another moral dilemma to challenge your intuition.]
+            <TransplantProblem />
           </p>
         </div>
       </section>

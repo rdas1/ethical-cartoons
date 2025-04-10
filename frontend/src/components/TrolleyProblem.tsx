@@ -124,6 +124,13 @@ export default function TrolleyProblem() {
 
   return (
     <div className="space-y-4">
+      <div text-black bg-white border-red>
+        <p>A trolley is heading towards <b>five people</b> tied to the tracks.</p>
+        <p>You can pull a lever to divert it to another track, where <b>one person</b> is tied up.</p>
+        <br />
+        <p>What do you do?</p>
+      </div>
+
       <div className="space-x-2">
         <Button onClick={() => {
                     setTrack('top')
@@ -141,9 +148,6 @@ export default function TrolleyProblem() {
         )}
       </div>
 
-      <div text-black bg-white border-red>
-        A trolley is heading towards <b>five people</b> tied to the tracks.<br/>You can pull a lever to divert it to another track, where <b>one person</b> is tied up.<br/><br/>What do you do?
-      </div>
 
       <svg viewBox="0 0 800 400" className="w-full h-[400px]">
         <g id="one-person">
