@@ -30,7 +30,7 @@ export default function IntroModule() {
       {/* Page 2: Transplant Problem */}
       <section className="h-screen w-full flex items-center justify-center scroll-snap-start bg-gray-50 p-4">
         <div className="max-w-3xl w-full text-center">
-          <h2 className="text-3xl font-semibold mb-4">The Transplant Problem</h2>
+          <h2 className="text-3xl font-semibold mb-4">Scenario 2: The Transplant Problem</h2>
             <TransplantProblem />
         </div>
       </section>
