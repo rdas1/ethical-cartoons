@@ -17,7 +17,7 @@ export default function IntroModule() {
       {/* Page 1: Trolley Problem */}
       <section className="h-screen w-full flex items-center justify-center scroll-snap-start bg-white">
         <div className="max-w-3xl w-full text-center">
-          <h2 className="text-3xl font-semibold mb-2">The Trolley Problem</h2>
+          <h2 className="text-3xl font-semibold mb-2">Scenario 1</h2>
           <p>(Inspired by Neal Agarwal's <Link to="https://neal.fun/absurd-trolley-problems/" className="underline">Absurd Trolley Problems</Link>)</p>
           {/* Interactive component will go here */}
           <div className="mt-4">
@@ -31,9 +31,7 @@ export default function IntroModule() {
       <section className="h-screen w-full flex items-center justify-center scroll-snap-start bg-gray-50 p-4">
         <div className="max-w-3xl w-full text-center">
           <h2 className="text-3xl font-semibold mb-4">The Transplant Problem</h2>
-          <p className="text-lg text-gray-700">
             <TransplantProblem />
-          </p>
         </div>
       </section>
 
@@ -41,8 +39,14 @@ export default function IntroModule() {
       <section className="h-screen w-full flex items-center justify-center scroll-snap-start bg-white p-4">
         <div className="max-w-2xl w-full text-center">
           <h2 className="text-2xl font-semibold mb-4">What's the ethical difference between these two scenarios?</h2>
-          <p className="text-gray-600">
-            [We'll ask you to explain your thinking after the scenarios.]
+          <p>
+          What’s the difference between the Trolley and Transplant dilemmas?
+          </p>
+          <p>
+          In both, you face a choice: sacrifice one person to save five.
+          </p>
+          <p>
+          Yet most people give different answers. Why?
           </p>
         </div>
       </section>
