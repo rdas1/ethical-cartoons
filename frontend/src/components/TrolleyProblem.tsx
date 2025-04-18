@@ -2,14 +2,36 @@ import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin'
 import { Button } from '@/components/ui/button'
+import { getSessionId } from '@/utils/session'
 
 gsap.registerPlugin(MotionPathPlugin)
 
-export default function TrolleyProblem() {
+type TrolleyProblemProps = {
+  restore?: 'top' | 'bottom' | null;
+};
+
+export default function TrolleyProblem({ restore = null }: TrolleyProblemProps) {
+
+    const [responseId, setResponseId] = useState<number | null>(null);
+    const [stats, setStats] = useState<{
+      top: { percent: number; count: number };
+      bottom: { percent: number; count: number };
+      total: number;
+    } | null>(null);
+
+    const sessionId = getSessionId();
+
     const trolleyRef = useRef<SVGSVGElement>(null)
-    const [track, setTrack] = useState<'top' | 'bottom' | null>(null)
+    const [track, setTrack] = useState<'top' | 'bottom' | null>(null);
+    const [trackTrigger, setTrackTrigger] = useState(0); // <-- new trigger    
     const [hasActivated, setHasActivated] = useState(false)
     const [isAnimating, setIsAnimating] = useState(false)
+
+    const activateTrack = (t: 'top' | 'bottom') => {
+      setTrack(t);
+      setTrackTrigger(prev => prev + 1);  // triggers animation
+      setHasActivated(true);
+    };
 
   
     useEffect(() => {
@@ -34,8 +56,34 @@ export default function TrolleyProblem() {
       }, []);      
     
     useEffect(() => {
-      if (!trolleyRef.current || track === null) return
-  
+      if (!track || !trolleyRef.current) return;
+      if (track) {
+        const decision = track === "top" ? "pullTheLever" : "doNothing";
+        fetch("/api/submit/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            scenario: "trolley",
+            decision,
+            session_id: sessionId,
+          }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            setResponseId(data.id);
+          });
+      
+        fetch(`/api/stats/trolley/`)
+          .then((res) => res.json())
+          .then((data) =>
+            setStats({
+              top: data.pullTheLever,
+              bottom: data.doNothing,
+              total: data.total
+            })
+          );
+      }
+
       const shared = document.querySelector('#SharedPath') as SVGPathElement
       const top = document.querySelector('#TopPath') as SVGPathElement
       const bottom = document.querySelector('#BottomPath') as SVGPathElement
@@ -84,9 +132,41 @@ export default function TrolleyProblem() {
             }
           }, [], 'move+=1.8'); // 1.8 seconds into the trolley movement
                   
-    }, [track])
+    }, [trackTrigger])
+
+    useEffect(() => {
+      if (!restore) return;
+      console.log("restore", restore);
+      activateTrack(restore);
+    
+      fetch(`/api/stats/trolley/`)
+        .then((res) => res.json())
+        .then((data) =>
+          setStats({
+            top: data.pullTheLever,
+            bottom: data.doNothing,
+            total: data.total
+          })
+        );
+    
+      fetch(`/api/last_decision/?scenario_name=trolley&session_id=${sessionId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.response_id) {
+            setResponseId(data.response_id);
+          }
+        });
+    }, [restore]);
+    
 
     const handleReset = () => {
+
+      if (responseId) {
+        fetch(`/api/response/${responseId}`, { method: "DELETE" });
+      }
+      setResponseId(null);
+      setStats(null);
+
         const shared = document.querySelector('#SharedPath') as SVGPathElement
         const one = document.querySelector('#one-person') as SVGGElement
         const five = document.querySelector('#one-person_2') as SVGGElement
@@ -132,15 +212,19 @@ export default function TrolleyProblem() {
       </div>
 
       <div className="space-x-2">
-        <Button onClick={() => {
-                    setTrack('top')
-                    setHasActivated(true)
-                }} 
-                disabled={track !== null}>Pull the Lever</Button>
-        <Button onClick={() => {
-            setTrack('bottom')
-            setHasActivated(true)
-        }} disabled={track !== null}>Do Nothing</Button>
+        <Button
+          onClick={() => activateTrack('top')}
+          disabled={hasActivated || isAnimating}
+        >
+          Pull the Lever
+        </Button>
+
+        <Button
+          onClick={() => activateTrack('bottom')}
+          disabled={hasActivated || isAnimating}
+        >
+          Do Nothing
+        </Button>
         {hasActivated && (
         <Button variant="outline" onClick={handleReset} disabled={isAnimating}>
             Reset
@@ -148,7 +232,14 @@ export default function TrolleyProblem() {
         )}
       </div>
 
-
+      {track && stats && (
+        <p>
+          You chose to {track === "top" ? "pull the lever" : "do nothing"},
+          causing {track === "top" ? "1" : "5"} death{track === "bottom" ? "s" : ""}.<br />
+          {`${stats[track].percent}% of respondents made the same choice. ${100 - stats[track].percent}% disagreed. (${stats.total} total responses)`}
+        </p>
+      )}
+      
       <svg viewBox="0 0 800 400" className="w-full h-[400px]">
         <g id="one-person">
         <g opacity="1">
