@@ -8,6 +8,7 @@ import {
   } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { getSessionId } from "@/utils/session"; // use your existing UUID logic
+import { apiFetch } from "@/utils/api";
 
 type ModuleRestorePromptProps = {
   moduleName: string;
@@ -21,7 +22,7 @@ export default function ModuleRestorePrompt({ moduleName, onRestore }: ModuleRes
   useEffect(() => {
     const sessionId = getSessionId();
 
-    fetch(`/api/module_responses/${moduleName}?session_id=${sessionId}`)
+    apiFetch(`/module_responses/${moduleName}?session_id=${sessionId}`)
       .then(res => res.json())
       .then(data => {
         console.log("Module response data:", data);

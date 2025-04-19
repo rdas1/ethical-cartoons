@@ -3,6 +3,7 @@ import { gsap } from 'gsap'
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin'
 import { Button } from '@/components/ui/button'
 import { getSessionId } from '@/utils/session'
+import { apiFetch } from '@/utils/api'
 
 gsap.registerPlugin(MotionPathPlugin)
 
@@ -59,7 +60,7 @@ export default function TrolleyProblem({ restore = null }: TrolleyProblemProps) 
       if (!track || !trolleyRef.current) return;
       if (track) {
         const decision = track === "top" ? "pullTheLever" : "doNothing";
-        fetch("/api/submit/", {
+        apiFetch("/submit/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -73,7 +74,7 @@ export default function TrolleyProblem({ restore = null }: TrolleyProblemProps) 
             setResponseId(data.id);
           });
       
-        fetch(`/api/stats/trolley/`)
+        apiFetch(`/stats/trolley/`)
           .then((res) => res.json())
           .then((data) =>
             setStats({
@@ -139,7 +140,7 @@ export default function TrolleyProblem({ restore = null }: TrolleyProblemProps) 
       console.log("restore", restore);
       activateTrack(restore);
     
-      fetch(`/api/stats/trolley/`)
+      apiFetch(`/stats/trolley/`)
         .then((res) => res.json())
         .then((data) =>
           setStats({
@@ -149,7 +150,7 @@ export default function TrolleyProblem({ restore = null }: TrolleyProblemProps) 
           })
         );
     
-      fetch(`/api/last_decision/?scenario_name=trolley&session_id=${sessionId}`)
+      apiFetch(`/last_decision/?scenario_name=trolley&session_id=${sessionId}`)
         .then((res) => res.json())
         .then((data) => {
           if (data.response_id) {
@@ -162,7 +163,7 @@ export default function TrolleyProblem({ restore = null }: TrolleyProblemProps) 
     const handleReset = () => {
 
       if (responseId) {
-        fetch(`/api/response/${responseId}`, { method: "DELETE" });
+        apiFetch(`/response/${responseId}`, { method: "DELETE" });
       }
       setResponseId(null);
       setStats(null);

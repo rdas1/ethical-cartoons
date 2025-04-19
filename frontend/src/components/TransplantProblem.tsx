@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import StickFigure from "@/components/StickFigure";
 import { getSessionId } from "@/utils/session";
+import { apiFetch } from "@/utils/api";
 
 type TransplantProblemProps = {
   restore?: "sacrifice" | "spare" | null;
@@ -21,7 +22,7 @@ export default function TransplantProblem({ restore = null }: TransplantProblemP
 
   const handleReset = () => {
     if (responseId) {
-      fetch(`/api/response/${responseId}`, { method: "DELETE" });
+      apiFetch(`/response/${responseId}`, { method: "DELETE" });
     }
     setDecision(null);
     setStats(null);
@@ -33,7 +34,7 @@ export default function TransplantProblem({ restore = null }: TransplantProblemP
   useEffect(() => {
     if (!decision || wasRestored) return;
 
-    fetch("/api/submit/", {
+    apiFetch("/submit/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -47,7 +48,7 @@ export default function TransplantProblem({ restore = null }: TransplantProblemP
         setResponseId(data.id);
       });
 
-    fetch(`/api/stats/transplant/`)
+    apiFetch(`/stats/transplant/`)
       .then((res) => res.json())
       .then((data) => setStats(data));
   }, [decision]);
@@ -58,11 +59,11 @@ export default function TransplantProblem({ restore = null }: TransplantProblemP
     setDecision(restore);
     setWasRestored(true);
 
-    fetch(`/api/stats/transplant/`)
+    apiFetch(`/stats/transplant/`)
       .then((res) => res.json())
       .then((data) => setStats(data));
 
-    fetch(`/api/last_decision/?scenario_name=transplant&session_id=${sessionId}`)
+      apiFetch(`/last_decision/?scenario_name=transplant&session_id=${sessionId}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.response_id) {

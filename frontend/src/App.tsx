@@ -4,7 +4,7 @@ import IntroModule from "./pages/IntroModule";
 
 function App() {
   return (
-    <Router>
+    <Router basename="/ethical-cartoons/">
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/modules/intro" element={<IntroModule />} />
