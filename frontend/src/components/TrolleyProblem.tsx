@@ -29,7 +29,7 @@ export default function TrolleyProblem({ restore = null }: TrolleyProblemProps) 
     const [isAnimating, setIsAnimating] = useState(false)
 
     const loadStats = () => {
-      apiFetch(`/stats/trolley/`)
+      apiFetch(`/stats/trolley`)
         .then((res) => res.json())
         .then((data) => {
           console.log("Loaded trolley stats:", data); // ✅ Debugging statement

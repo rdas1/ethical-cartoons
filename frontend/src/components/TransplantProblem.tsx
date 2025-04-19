@@ -21,7 +21,7 @@ export default function TransplantProblem({ restore = null }: TransplantProblemP
   const sessionId = getSessionId();
 
   const loadStats = () => {
-    apiFetch("/stats/transplant/")
+    apiFetch("/stats/transplant")
       .then((res) => res.json())
       .then((data) => {
         setStats(data);
