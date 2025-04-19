@@ -94,6 +94,8 @@ export default function DiscussionPanel({
           </div>
         </div>
 
+        <p>Participation in the discussion is optional. Whenever you're ready, click the button below to continue.</p>
+
         {onContinue && (
           <div className="text-center mt-8">
             <Button onClick={onContinue}>Continue to Interpretation</Button>
