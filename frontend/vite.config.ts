@@ -6,8 +6,13 @@ import svgr from 'vite-plugin-svgr'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/ethical-cartoons/',
+  base: "/ethical-cartoons/", // ✅ required for GitHub Pages
   plugins: [react(), tailwindcss(), svgr()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
   server: {
     proxy: {
       '/api': {
@@ -16,10 +21,5 @@ export default defineConfig({
         rewrite: path => path.replace(/^\/api/, '')
       }
     }
-  },
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
-})
+  }
+});
