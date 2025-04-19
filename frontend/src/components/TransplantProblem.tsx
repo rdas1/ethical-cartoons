@@ -143,8 +143,5 @@ export default function TransplantProblem({ restore = null }: TransplantProblemP
             </div>
         </div>
     </section>
-
-
-
   );
 }
