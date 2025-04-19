@@ -28,6 +28,22 @@ export default function TrolleyProblem({ restore = null }: TrolleyProblemProps) 
     const [hasActivated, setHasActivated] = useState(false)
     const [isAnimating, setIsAnimating] = useState(false)
 
+    const loadStats = () => {
+      apiFetch(`/stats/trolley/`)
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("Loaded trolley stats:", data); // ✅ Debugging statement
+          setStats({
+            top: data.pullTheLever,
+            bottom: data.doNothing,
+            total: data.total,
+          });
+        })
+        .catch((err) => {
+          console.error("Failed to load trolley stats:", err);
+        });
+    };
+
     const activateTrack = (t: 'top' | 'bottom') => {
       setTrack(t);
       setTrackTrigger(prev => prev + 1);  // triggers animation
@@ -58,32 +74,24 @@ export default function TrolleyProblem({ restore = null }: TrolleyProblemProps) 
     
     useEffect(() => {
       if (!track || !trolleyRef.current) return;
-      if (track) {
-        const decision = track === "top" ? "pullTheLever" : "doNothing";
-        apiFetch("/submit/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            scenario: "trolley",
-            decision,
-            session_id: sessionId,
-          }),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            setResponseId(data.id);
-          });
-      
-        apiFetch(`/stats/trolley/`)
-          .then((res) => res.json())
-          .then((data) =>
-            setStats({
-              top: data.pullTheLever,
-              bottom: data.doNothing,
-              total: data.total
-            })
-          );
-      }
+
+      const decision = track === "top" ? "pullTheLever" : "doNothing";
+    
+      apiFetch("/submit/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          scenario: "trolley",
+          decision,
+          session_id: sessionId,
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setResponseId(data.id);
+        });
+    
+      loadStats();
 
       const shared = document.querySelector('#SharedPath') as SVGPathElement
       const top = document.querySelector('#TopPath') as SVGPathElement
@@ -137,18 +145,11 @@ export default function TrolleyProblem({ restore = null }: TrolleyProblemProps) 
 
     useEffect(() => {
       if (!restore) return;
-      console.log("restore", restore);
-      activateTrack(restore);
     
-      apiFetch(`/stats/trolley/`)
-        .then((res) => res.json())
-        .then((data) =>
-          setStats({
-            top: data.pullTheLever,
-            bottom: data.doNothing,
-            total: data.total
-          })
-        );
+      console.log("Restoring trolley state:", restore);
+      activateTrack(restore); // Triggers animation and response
+    
+      loadStats(); // ✅ Reuse here too
     
       apiFetch(`/last_decision/?scenario_name=trolley&session_id=${sessionId}`)
         .then((res) => res.json())
