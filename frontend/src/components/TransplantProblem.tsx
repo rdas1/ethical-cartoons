@@ -9,7 +9,7 @@ type TransplantProblemProps = {
 };
 
 export default function TransplantProblem({ restore = null }: TransplantProblemProps) {
-  const [decision, setDecision] = useState<null | "sacrifice" | "spare">(restore);
+  const [decision, setDecision] = useState<"sacrifice" | "spare" | null>(restore);
   const [responseId, setResponseId] = useState<number | null>(null);
   const [stats, setStats] = useState<{
     sacrifice: { percent: number; count: number };
@@ -20,17 +20,30 @@ export default function TransplantProblem({ restore = null }: TransplantProblemP
 
   const sessionId = getSessionId();
 
-  const handleReset = () => {
-    if (responseId) {
-      apiFetch(`/response/${responseId}`, { method: "DELETE" });
-    }
-    setDecision(null);
-    setStats(null);
-    setResponseId(null);
-    setWasRestored(false);
+  const loadStats = () => {
+    apiFetch("/stats/transplant/")
+      .then((res) => res.json())
+      .then((data) => {
+        setStats(data);
+        console.log("Loaded transplant stats:", data);
+      })
+      .catch((err) => console.error("Failed to load stats", err));
   };
 
-  // Handle fresh submission (user-initiated)
+  const handleReset = () => {
+    if (responseId) {
+      apiFetch(`/response/${responseId}`, { method: "DELETE" })
+        .then(() => console.log("Deleted response", responseId))
+        .catch((err) => console.error("Failed to delete response", err));
+    }
+    setDecision(null);
+    setResponseId(null);
+    setStats(null);
+    setWasRestored(false);
+    loadStats(); // Fetch latest stats after reset
+  };
+
+  // User-initiated decision submission
   useEffect(() => {
     if (!decision || wasRestored) return;
 
@@ -46,30 +59,32 @@ export default function TransplantProblem({ restore = null }: TransplantProblemP
       .then((res) => res.json())
       .then((data) => {
         setResponseId(data.id);
-      });
+        console.log("Submitted response", data);
+      })
+      .catch((err) => console.error("Failed to submit response", err));
 
-    apiFetch(`/stats/transplant/`)
-      .then((res) => res.json())
-      .then((data) => setStats(data));
+    loadStats();
   }, [decision]);
 
-  // Handle restore on mount
+  // Restore prior state if provided
   useEffect(() => {
     if (!restore) return;
+    console.log("Restoring transplant decision:", restore);
+
     setDecision(restore);
     setWasRestored(true);
 
-    apiFetch(`/stats/transplant/`)
-      .then((res) => res.json())
-      .then((data) => setStats(data));
+    loadStats();
 
-      apiFetch(`/last_decision/?scenario_name=transplant&session_id=${sessionId}`)
+    apiFetch(`/last_decision/?scenario_name=transplant&session_id=${sessionId}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.response_id) {
           setResponseId(data.response_id);
+          console.log("Restored response ID:", data.response_id);
         }
-      });
+      })
+      .catch((err) => console.error("Failed to restore response ID", err));
   }, [restore]);
 
   return (
