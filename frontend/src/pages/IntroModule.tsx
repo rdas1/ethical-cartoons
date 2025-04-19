@@ -2,7 +2,7 @@ import ModuleRestorePrompt from "@/components/ModuleRestorePrompt";
 import NavBar from "@/components/NavBar";
 import TransplantProblem from "@/components/TransplantProblem";
 import TrolleyProblem from "@/components/TrolleyProblem";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 export default function IntroModule() {
