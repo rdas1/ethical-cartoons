@@ -95,7 +95,7 @@ export default function TransplantProblem({ restore = null }: TransplantProblemP
         <StickFigure dead={decision === "sacrifice"} />
       </svg>
 
-      <p>You can perform a transplant operation on the healthy person, sacrificing their life to save the five patients.</p>
+      <p>You can perform a fatal transplant operation on the healthy person, sacrificing them to save the five patients.</p>
       <p>What do you do?</p>
 
       <div className="space-x-2">
@@ -114,8 +114,8 @@ export default function TransplantProblem({ restore = null }: TransplantProblemP
 
       {stats && decision && (
         <p>
-          You chose to {decision === "sacrifice" ? "sacrifice the healthy person" : "do nothing"},
-          causing {decision === "sacrifice" ? "1" : "5"} death{decision === "spare" ? "s" : ""}.<br />
+          You chose to <b>{decision === "sacrifice" ? "sacrifice the healthy person" : "do nothing"}</b>,
+          causing <b>{decision === "sacrifice" ? "1" : "5"} death{decision === "spare" ? "s" : ""}</b>.<br />
           {decision === "sacrifice"
             ? `${stats.sacrifice.percent}% of respondents made the same choice. ${100 - stats.sacrifice.percent}% disagreed. (${stats.total} total responses)`
             : `${stats.spare.percent}% of respondents made the same choice. ${100 - stats.spare.percent}% disagreed. (${stats.total} total responses)`}

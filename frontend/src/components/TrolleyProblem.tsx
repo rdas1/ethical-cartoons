@@ -234,8 +234,8 @@ export default function TrolleyProblem({ restore = null }: TrolleyProblemProps) 
 
       {track && stats && (
         <p>
-          You chose to {track === "top" ? "pull the lever" : "do nothing"},
-          causing {track === "top" ? "1" : "5"} death{track === "bottom" ? "s" : ""}.<br />
+          You chose to <b>{track === "top" ? "pull the lever" : "do nothing"}</b>,
+          causing <b>{track === "top" ? "1" : "5"} death{track === "bottom" ? "s" : ""}</b>.<br />
           {`${stats[track].percent}% of respondents made the same choice. ${100 - stats[track].percent}% disagreed. (${stats.total} total responses)`}
         </p>
       )}
