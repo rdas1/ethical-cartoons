@@ -88,55 +88,63 @@ export default function TransplantProblem({ restore = null }: TransplantProblemP
   }, [restore]);
 
   return (
-    <div className="space-y-4 text-black">
-      <p>
-        You're an emergency room doctor treating <b>five patients</b> who each need a different organ transplant to survive.
-      </p>
+    <section className="h-screen w-full flex items-center justify-center scroll-snap-start bg-gray-50 p-4">
+        <div className="max-w-3xl w-full text-center">
+            <h2 className="text-3xl font-semibold mb-4">Scenario 2: The Transplant Problem</h2>
+            <div className="space-y-4 text-black">
+                <p>
+                    You're an emergency room doctor treating <b>five patients</b> who each need a different organ transplant to survive.
+                </p>
 
-      {/* Five patients */}
-      <svg viewBox="253.425 173.546 300 80" className="w-full h-[80px] mx-auto">
-        {[0, 1, 2, 3, 4].map((i) => (
-          <g key={i} transform={`translate(${i * 60}, 0)`}>
-            <StickFigure dead={decision === "spare"} />
-          </g>
-        ))}
-      </svg>
+                {/* Five patients */}
+                <svg viewBox="253.425 173.546 300 80" className="w-full h-[80px] mx-auto">
+                    {[0, 1, 2, 3, 4].map((i) => (
+                    <g key={i} transform={`translate(${i * 60}, 0)`}>
+                        <StickFigure dead={decision === "spare"} />
+                    </g>
+                    ))}
+                </svg>
 
-      <p>
-        <b>One healthy person</b> walks in for a routine checkup. They are a perfect organ-donor match for all five of the other patients.
-      </p>
+                <p>
+                    <b>One healthy person</b> walks in for a routine checkup. They are a perfect organ-donor match for all five of the other patients.
+                </p>
 
-      {/* Healthy person */}
-      <svg viewBox="253.425 173.546 36.399 69.454" className="w-full h-[80px] mx-auto">
-        <StickFigure dead={decision === "sacrifice"} />
-      </svg>
+                {/* Healthy person */}
+                <svg viewBox="253.425 173.546 36.399 69.454" className="w-full h-[80px] mx-auto">
+                    <StickFigure dead={decision === "sacrifice"} />
+                </svg>
 
-      <p>You can perform a fatal transplant operation on the healthy person, sacrificing them to save the five patients.</p>
-      <p>What do you do?</p>
+                <p>You can perform a fatal transplant operation on the healthy person, sacrificing them to save the five patients.</p>
+                <p>What do you do?</p>
 
-      <div className="space-x-2">
-        <Button onClick={() => setDecision("sacrifice")} disabled={decision !== null}>
-          Perform the Transplant Operation
-        </Button>
-        <Button onClick={() => setDecision("spare")} disabled={decision !== null}>
-          Do Nothing
-        </Button>
-        {decision && (
-          <Button variant="outline" onClick={handleReset}>
-            Reset
-          </Button>
-        )}
-      </div>
+                <div className="space-x-2">
+                    <Button onClick={() => setDecision("sacrifice")} disabled={decision !== null}>
+                    Perform the Transplant Operation
+                    </Button>
+                    <Button onClick={() => setDecision("spare")} disabled={decision !== null}>
+                    Do Nothing
+                    </Button>
+                    {decision && (
+                    <Button variant="outline" onClick={handleReset}>
+                        Reset
+                    </Button>
+                    )}
+                </div>
 
-      {stats && decision && (
-        <p>
-          You chose to <b>{decision === "sacrifice" ? "sacrifice the healthy person" : "do nothing"}</b>,
-          causing <b>{decision === "sacrifice" ? "1" : "5"} death{decision === "spare" ? "s" : ""}</b>.<br />
-          {decision === "sacrifice"
-            ? `${stats.sacrifice.percent}% of respondents made the same choice. ${100 - stats.sacrifice.percent}% disagreed. (${stats.total} total responses)`
-            : `${stats.spare.percent}% of respondents made the same choice. ${100 - stats.spare.percent}% disagreed. (${stats.total} total responses)`}
-        </p>
-      )}
-    </div>
+                {stats && decision && (
+                    <p>
+                    You chose to <b>{decision === "sacrifice" ? "sacrifice the healthy person" : "do nothing"}</b>,
+                    causing <b>{decision === "sacrifice" ? "1" : "5"} death{decision === "spare" ? "s" : ""}</b>.<br />
+                    {decision === "sacrifice"
+                        ? `${stats.sacrifice.percent}% of respondents made the same choice. ${100 - stats.sacrifice.percent}% disagreed. (${stats.total} total responses)`
+                        : `${stats.spare.percent}% of respondents made the same choice. ${100 - stats.spare.percent}% disagreed. (${stats.total} total responses)`}
+                    </p>
+                )}
+            </div>
+        </div>
+    </section>
+
+
+
   );
 }
