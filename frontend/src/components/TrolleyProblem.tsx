@@ -162,47 +162,52 @@ export default function TrolleyProblem({ restore = null }: TrolleyProblemProps) 
     
 
     const handleReset = () => {
-
       if (responseId) {
-        apiFetch(`/response/${responseId}`, { method: "DELETE" });
+        apiFetch(`/response/${responseId}`, { method: "DELETE" })
+          .then(() => {
+            console.log("Response deleted.");
+          })
+          .catch((err) => {
+            console.error("Error deleting response:", err);
+          });
       }
+    
       setResponseId(null);
       setStats(null);
-
-        const shared = document.querySelector('#SharedPath') as SVGPathElement
-        const one = document.querySelector('#one-person') as SVGGElement
-        const five = document.querySelector('#one-person_2') as SVGGElement
-        const splat = document.querySelector('#splat') as SVGGElement
-        const splatX5 = document.querySelector('#splat-x5') as SVGGElement
-      
-        if (!trolleyRef.current || !shared || !one || !five || !splat || !splatX5) return
-      
-        // Reset trolley position
-        gsap.set(trolleyRef.current, {
-          motionPath: {
-            path: shared,
-            align: shared,
-            alignOrigin: [0.5, 0.5],
-            autoRotate: true,
-            start: 0.12,
-            end: 0.12,
-          },
-        })
-      
-        // Restore victims
-        gsap.set(one, { opacity: 1 })
-        gsap.set(five, { opacity: 1 })
-      
-        // Hide splats
-        splat.setAttribute('visibility', 'hidden')
-        splatX5.setAttribute('visibility', 'hidden')
-        gsap.set([splat, splatX5], { opacity: 0 })
-      
-        // Allow interaction again
-        setTrack(null)
-        setHasActivated(false)
-      }
-      
+      setTrack(null);
+      setHasActivated(false);
+    
+      // Reset trolley visual
+      const shared = document.querySelector('#SharedPath') as SVGPathElement;
+      const one = document.querySelector('#one-person') as SVGGElement;
+      const five = document.querySelector('#one-person_2') as SVGGElement;
+      const splat = document.querySelector('#splat') as SVGGElement;
+      const splatX5 = document.querySelector('#splat-x5') as SVGGElement;
+    
+      if (!trolleyRef.current || !shared || !one || !five || !splat || !splatX5) return;
+    
+      gsap.set(trolleyRef.current, {
+        motionPath: {
+          path: shared,
+          align: shared,
+          alignOrigin: [0.5, 0.5],
+          autoRotate: true,
+          start: 0.12,
+          end: 0.12,
+        },
+      });
+    
+      gsap.set(one, { opacity: 1 });
+      gsap.set(five, { opacity: 1 });
+    
+      splat.setAttribute('visibility', 'hidden');
+      splatX5.setAttribute('visibility', 'hidden');
+      gsap.set([splat, splatX5], { opacity: 0 });
+    
+      // ✅ Fetch updated stats after reset
+      loadStats();
+    };
+    
 
   return (
     <div className="space-y-4">
