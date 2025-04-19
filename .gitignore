@@ -1,0 +1,4 @@
+.DS_Store
+backend/app/responses.db
+backend/responses.db
+backend/venv
