@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from app.models.models import Base, Module, Scenario, DecisionOption
+from sqlalchemy.orm import sessionmaker, Session
+from app.models.models import Base, Module, Scenario, DecisionOption, Comment
+from typing import Generator
 
 engine = create_engine("sqlite:///responses.db")
 SessionLocal = sessionmaker(bind=engine)
@@ -36,3 +37,10 @@ def seed_data():
 
     db.commit()
     db.close()
+
+def get_db() -> Generator[Session, None, None]:
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

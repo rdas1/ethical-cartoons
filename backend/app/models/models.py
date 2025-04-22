@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, UniqueConstraint
+from sqlalchemy import Column, Integer, String, ForeignKey, UniqueConstraint, DateTime, Text
 from sqlalchemy.orm import relationship, declarative_base
+from datetime import datetime
 
 Base = declarative_base()
 
@@ -36,3 +37,12 @@ class Response(Base):
     scenario = relationship("Scenario", back_populates="responses")
     option = relationship("DecisionOption")
     __table_args__ = (UniqueConstraint("scenario_id", "session_id", name="unique_response_per_session"),)
+
+class Comment(Base):
+    __tablename__ = "comments"
+
+    id = Column(Integer, primary_key=True, index=True)
+    module = Column(String, nullable=False)  # e.g., "IntroModule"
+    discussion_topic = Column(String, nullable=False)  # e.g., "trolley-vs-transplant"
+    text = Column(Text, nullable=False)
+    timestamp = Column(DateTime, default=datetime.utcnow)
