@@ -2,7 +2,7 @@ import ModuleRestorePrompt from "@/components/ModuleRestorePrompt";
 import NavBar from "@/components/NavBar";
 import TransplantProblem from "@/components/TransplantProblem";
 import TrolleyProblem from "@/components/TrolleyProblem";
-import TrolleyVsTransplantDiscussionSection from "@/components/TrolleyVsTransplantDiscussionSection";
+import TrolleyVsTransplantDiscussionPanel from "@/components/TrolleyVsTransplantDiscussionPanel";
 import { useState } from "react";
 
 export default function IntroModule() {
@@ -41,7 +41,7 @@ export default function IntroModule() {
             />
 
       {/* Page 3: Summary or Response Form */}
-      <TrolleyVsTransplantDiscussionSection />
+      <TrolleyVsTransplantDiscussionPanel />
     </div>
   );
 }

@@ -2,11 +2,17 @@ import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { apiFetch } from "@/utils/api";
 import { getSessionId } from "@/utils/session";
+import CommentItem from "./CommentItem";
 
-type Comment = {
+export type Comment = {
   id: number;
   text: string;
   created_at: string;
+  parent_id: number | null;
+  agree_count: number;
+  disagree_count: number;
+  user_reaction?: "agree" | "disagree";
+  children?: Comment[];
 };
 
 type DiscussionPanelProps = {
@@ -14,22 +20,89 @@ type DiscussionPanelProps = {
   prompt: string;
   commentPrompt?: string;
   commentSubmitLabel?: string;
-  commentApiPath: string; // e.g. "/comments/trolley-vs-transplant"
+  discussionSlug: string; // e.g. "trolley-vs-transplant"
   onContinue?: () => void;
 };
+
+function findCommentById(comments: Comment[], id: number): Comment | undefined {
+  for (const c of comments) {
+    if (c.id === id) return c;
+    if (c.children) {
+      const result = findCommentById(c.children, id);
+      if (result) return result;
+    }
+  }
+  return undefined;
+}
+
+function updateCommentTreeWithReaction(
+  comments: Comment[],
+  id: number,
+  current: "agree" | "disagree" | undefined,
+  next: "agree" | "disagree" | null
+): Comment[] {
+  return comments.map((comment) => {
+    if (comment.id === id) {
+      let agree_count = comment.agree_count;
+      let disagree_count = comment.disagree_count;
+
+      if (current === "agree") agree_count--;
+      if (current === "disagree") disagree_count--;
+
+      if (next === "agree") agree_count++;
+      if (next === "disagree") disagree_count++;
+
+      return {
+        ...comment,
+        agree_count,
+        disagree_count,
+        user_reaction: next ?? undefined,
+      };
+    } else if (comment.children) {
+      return {
+        ...comment,
+        children: updateCommentTreeWithReaction(comment.children, id, current, next),
+      };
+    }
+    return comment;
+  });
+}
+
+function nestComments(flatComments: Comment[]): Comment[] {
+  const map: Record<number, Comment> = {};
+  const roots: Comment[] = [];
+
+  flatComments.forEach((c) => {
+    map[c.id] = { ...c, children: [] };
+  });
+
+  flatComments.forEach((c) => {
+    if (c.parent_id) {
+      map[c.parent_id]?.children?.push(map[c.id]);
+    } else {
+      roots.push(map[c.id]);
+    }
+  });
+
+  return roots;
+}
 
 export default function DiscussionPanel({
   title,
   prompt,
   commentPrompt = "Why do you think people feel differently about these situations?",
   commentSubmitLabel = "Submit Comment",
-  commentApiPath,
+  discussionSlug,
   onContinue,
 }: DiscussionPanelProps) {
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState<Comment[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const sessionId = getSessionId();
+
+  const commentApiPath = `/comments/${discussionSlug}`;
+  const replyApiPath = (parent_id: number) => `/comments/${discussionSlug}/reply/${parent_id}`;
+  const reactApiPath = (id: number, reaction: "agree" | "disagree") => `/comments/${discussionSlug}/react/${id}/${reaction}`;
 
   useEffect(() => {
     apiFetch(commentApiPath)
@@ -57,6 +130,47 @@ export default function DiscussionPanel({
     }
   };
 
+  const handleReply = async (parentId: number, text: string) => {
+    if (!text.trim()) return;
+    try {
+      const res = await apiFetch(replyApiPath(parentId), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text, session_id: sessionId }),
+      });
+      const reply = await res.json();
+      setComments((prev) => [reply, ...prev]);
+    } catch (err) {
+      console.error("Failed to submit reply", err);
+    }
+  };
+
+  const handleReact = async (commentId: number, reaction: "agree" | "disagree") => {
+    const comment = findCommentById(comments, commentId);
+    if (!comment) return;
+  
+    const current = comment.user_reaction;
+  
+    let newReaction: "agree" | "disagree" | null = reaction;
+    if (current === reaction) {
+      // Undo reaction
+      newReaction = null;
+    }
+  
+    // Hit backend
+    await apiFetch(`${commentApiPath}/react/${commentId}/${reaction}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ session_id: sessionId, toggle: true }), // optional: tell backend this may be a toggle
+    });
+  
+    // Update state
+    setComments((prev) =>
+      updateCommentTreeWithReaction(prev, commentId, current, newReaction)
+    );
+  };
+  
+
   return (
     <section className="h-screen w-full flex flex-col items-center justify-center scroll-snap-start bg-white p-6 text-black">
       <div className="max-w-3xl w-full space-y-6">
@@ -81,12 +195,15 @@ export default function DiscussionPanel({
 
         <div className="mt-6">
           <h3 className="text-xl font-semibold mb-2">What others have said</h3>
-          <div className="max-h-64 overflow-y-auto border border-gray-200 rounded-md p-4 space-y-4 bg-gray-50">
+          <div className="max-h-64 overflow-y-auto overflow-x-auto border border-gray-200 rounded-md p-4 space-y-4 bg-gray-50">
             {comments.length > 0 ? (
-              comments.map((c) => (
-                <div key={c.id} className="p-3 bg-white rounded shadow-sm">
-                  {c.text}
-                </div>
+              nestComments(comments).map((comment) => (
+                <CommentItem
+                  key={comment.id}
+                  comment={comment}
+                  onReplySubmit={handleReply}
+                  onReact={handleReact}
+                />
               ))
             ) : (
               <p className="text-gray-500">No comments yet. Be the first to share!</p>

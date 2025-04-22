@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
-from app.models.models import Base, Module, Scenario, DecisionOption, Comment
+from app.models.models import Base, Module, Scenario, DecisionOption, DiscussionThread, Comment, CommentReaction
 from typing import Generator
 
 engine = create_engine("sqlite:///responses.db")
@@ -34,6 +34,13 @@ def seed_data():
             existing = db.query(DecisionOption).filter_by(scenario_id=scenario.id, label=label).first()
             if not existing:
                 db.add(DecisionOption(scenario=scenario, label=label))
+
+    # Create discussion thread if it doesn't exist
+    slug = "trolley-vs-transplant"
+    existing_thread = db.query(DiscussionThread).filter_by(slug=slug).first()
+    if not existing_thread:
+        thread = DiscussionThread(slug=slug)
+        db.add(thread)
 
     db.commit()
     db.close()

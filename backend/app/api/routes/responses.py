@@ -3,13 +3,9 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session, joinedload
 from app.db.db import get_db
 from app.models.models import Scenario, DecisionOption, Response, Module
+from app.schemas.response import ResponseIn, ResponseOut
 
 router = APIRouter()
-
-class ResponseIn(BaseModel):
-    scenario: str
-    decision: str
-    session_id: str
 
 def get_scenario_by_name(db: Session, name: str) -> Scenario:
     scenario = db.query(Scenario).filter_by(name=name).first()
@@ -17,7 +13,7 @@ def get_scenario_by_name(db: Session, name: str) -> Scenario:
         raise HTTPException(status_code=404, detail=f"Scenario '{name}' not found")
     return scenario
 
-@router.post("/submit")
+@router.post("/submit", response_model=ResponseOut)
 def submit_response(response: ResponseIn, db: Session = Depends(get_db)):
     scenario_obj = get_scenario_by_name(db, response.scenario)
     option = db.query(DecisionOption).filter_by(scenario_id=scenario_obj.id, label=response.decision).first()
