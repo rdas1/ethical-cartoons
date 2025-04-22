@@ -66,6 +66,9 @@ class Comment(Base):
 
     thread = relationship("DiscussionThread", back_populates="comments")
 
+    edited = Column(Boolean, default=False)
+    updated_at = Column(DateTime, nullable=True)
+
 class CommentReaction(Base):
     __tablename__ = "comment_reactions"
     id = Column(Integer, primary_key=True)

@@ -8,11 +8,14 @@ export type Comment = {
   id: number;
   text: string;
   created_at: string;
+  updated_at?: string | null;
   parent_id: number | null;
   agree_count: number;
   disagree_count: number;
   user_reaction?: "agree" | "disagree";
   children?: Comment[];
+  session_id: string;
+  edited?: boolean;
 };
 
 type DiscussionPanelProps = {
@@ -67,6 +70,26 @@ function updateCommentTreeWithReaction(
     return comment;
   });
 }
+
+function replaceCommentById(comments: Comment[], updated: Comment): Comment[] {
+  return comments.map((c) => {
+    if (c.id === updated.id) {
+      return { ...updated, children: c.children }; // preserve replies
+    } else if (c.children) {
+      return { ...c, children: replaceCommentById(c.children, updated) };
+    } else {
+      return c;
+    }
+  });
+}
+
+
+function removeCommentById(comments: Comment[], id: number): Comment[] {
+  return comments
+    .filter((c) => c.id !== id)
+    .map((c) => ({ ...c, children: removeCommentById(c.children || [], id) }));
+}
+
 
 function nestComments(flatComments: Comment[]): Comment[] {
   const map: Record<number, Comment> = {};
@@ -158,7 +181,7 @@ export default function DiscussionPanel({
     }
   
     // Hit backend
-    await apiFetch(`${commentApiPath}/react/${commentId}/${reaction}`, {
+    await apiFetch(reactApiPath(commentId, reaction), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ session_id: sessionId, toggle: true }), // optional: tell backend this may be a toggle
@@ -170,6 +193,37 @@ export default function DiscussionPanel({
     );
   };
   
+  const handleEdit = async (id: number, text: string) => {
+    const comment = findCommentById(comments, id);
+    if (!comment) return;
+  
+    const res = await apiFetch(`${commentApiPath}/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        text,
+        session_id: comment.session_id,  // required by backend schema
+      }),
+    });
+  
+    if (!res.ok) {
+      console.error("Failed to update comment");
+      return;
+    }
+  
+    const updated = await res.json();
+    setComments((prev) =>
+      replaceCommentById(prev, {
+        ...updated,
+        user_reaction: findCommentById(prev, updated.id)?.user_reaction ?? null,
+      })
+    );
+  };
+  
+  const handleDelete = async (id: number) => {
+    await apiFetch(`${commentApiPath}/${id}`, { method: "DELETE" });
+    setComments((prev) => removeCommentById(prev, id));
+  };
 
   return (
     <section className="h-screen w-full flex flex-col items-center justify-center scroll-snap-start bg-white p-6 text-black">
@@ -203,6 +257,9 @@ export default function DiscussionPanel({
                   comment={comment}
                   onReplySubmit={handleReply}
                   onReact={handleReact}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                  depth={0}
                 />
               ))
             ) : (

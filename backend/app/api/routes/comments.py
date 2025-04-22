@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, Body
+from datetime import datetime
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session, selectinload
 from app.db.db import get_db
 from app.models.models import Comment, CommentReaction, DiscussionThread, Module, Scenario
@@ -25,6 +26,31 @@ def post_comment(slug: str, comment_in: CommentIn, db: Session = Depends(get_db)
     db.commit()
     db.refresh(comment)
     return comment
+
+@router.put("/{slug}/{comment_id}", response_model=CommentOut)
+def update_comment(comment_id: int, comment_in: CommentIn, db: Session = Depends(get_db)):
+    comment = db.query(Comment).filter_by(id=comment_id).first()
+    if not comment:
+        raise HTTPException(status_code=404, detail="Comment not found")
+
+    comment.text = comment_in.text
+    comment.edited = True
+    comment.updated_at = datetime.utcnow()
+
+    db.commit()
+    db.refresh(comment)
+    return comment
+
+@router.delete("/{slug}/{comment_id}")
+def delete_comment(comment_id: int, db: Session = Depends(get_db)):
+    comment = db.query(Comment).filter_by(id=comment_id).first()
+    if not comment:
+        raise HTTPException(status_code=404, detail="Comment not found")
+
+    db.delete(comment)
+    db.commit()
+    return {"message": "Comment deleted"}
+
 
 @router.post("/{slug}/reply/{parent_id}", response_model=CommentOut)
 def reply_to_comment(slug: str, parent_id: int, comment_in: CommentIn, db: Session = Depends(get_db)):
