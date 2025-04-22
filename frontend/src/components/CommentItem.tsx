@@ -30,6 +30,9 @@ export default function CommentItem({
   return (
     <div style={{ marginLeft: depth * 16 }} className="mb-4 border-l pl-4">
       <div className="bg-white p-3 rounded shadow-sm">
+        <p className="font-semibold text-sm text-gray-700 mb-1">
+            {comment.is_anonymous ? "Anonymous" : comment.name || "Anonymous"}
+        </p>
         {isEditing ? (
           <>
             <textarea

@@ -3,10 +3,14 @@ import { Button } from "./ui/button";
 import { apiFetch } from "@/utils/api";
 import { getSessionId } from "@/utils/session";
 import CommentItem from "./CommentItem";
+import { Label } from "./ui/label";
+import { Checkbox } from "./ui/checkbox";
 
 export type Comment = {
   id: number;
   text: string;
+  name?: string;
+  is_anonymous: boolean;
   created_at: string;
   updated_at?: string | null;
   parent_id: number | null;
@@ -121,6 +125,8 @@ export default function DiscussionPanel({
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState<Comment[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [name, setName] = useState("");
+  const [isAnonymous, setIsAnonymous] = useState(true);
   const sessionId = getSessionId();
 
   const commentApiPath = `/comments/${discussionSlug}`;
@@ -141,7 +147,12 @@ export default function DiscussionPanel({
       const res = await apiFetch(commentApiPath, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: comment, session_id: sessionId }),
+        body: JSON.stringify({
+          text: comment,
+          session_id: sessionId,
+          name: isAnonymous ? null : name || null,
+          is_anonymous: isAnonymous
+        }),        
       });
       const newComment = await res.json();
       setComments((prev) => [newComment, ...prev]);
@@ -159,7 +170,13 @@ export default function DiscussionPanel({
       const res = await apiFetch(replyApiPath(parentId), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, session_id: sessionId }),
+        body: JSON.stringify({
+          text,
+          session_id: sessionId,
+          parent_id: parentId,
+          name: isAnonymous ? null : name || null,
+          is_anonymous: isAnonymous
+        }),
       });
       const reply = await res.json();
       setComments((prev) => [reply, ...prev]);
@@ -235,6 +252,35 @@ export default function DiscussionPanel({
           <label htmlFor="userComment" className="block font-medium">
             (Optional) Share your thoughts:
           </label>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="anonymous"
+                checked={isAnonymous}
+                onCheckedChange={(checked) => setIsAnonymous(!!checked)}
+              />
+              <Label htmlFor="anonymous" className="text-sm font-medium">
+                Post anonymously
+              </Label>
+            </div>
+
+            {!isAnonymous && (
+              <div className="space-y-1">
+                <Label htmlFor="name" className="block font-medium">
+                  Your name:
+                </Label>
+                <input
+                  id="name"
+                  type="text"
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="e.g., Alex"
+                />
+              </div>
+            )}
+          </div>
+
           <textarea
             id="userComment"
             placeholder={commentPrompt}
@@ -242,6 +288,7 @@ export default function DiscussionPanel({
             onChange={(e) => setComment(e.target.value)}
             value={comment}
           />
+          
           <Button onClick={handleSubmit} disabled={comment.trim().length === 0 || isSubmitting}>
             {isSubmitting ? "Submitting..." : commentSubmitLabel}
           </Button>

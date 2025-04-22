@@ -21,7 +21,7 @@ def post_comment(slug: str, comment_in: CommentIn, db: Session = Depends(get_db)
     thread = db.query(DiscussionThread).filter_by(slug=slug).first()
     if not thread:
         raise HTTPException(status_code=404, detail="Discussion thread not found")
-    comment = Comment(text=comment_in.text, session_id=comment_in.session_id, thread_id=thread.id)
+    comment = Comment(text=comment_in.text, session_id=comment_in.session_id, name=comment_in.name if not comment_in.is_anonymous else None, is_anonymous=comment_in.is_anonymous, thread_id=thread.id)
     db.add(comment)
     db.commit()
     db.refresh(comment)
@@ -71,6 +71,8 @@ def reply_to_comment(slug: str, parent_id: int, comment_in: CommentIn, db: Sessi
     reply = Comment(
         text=comment_in.text,
         session_id=comment_in.session_id,
+        name=comment_in.name if not comment_in.is_anonymous else None,
+        is_anonymous=comment_in.is_anonymous,
         thread_id=thread.id,
         parent_id=parent_id,
     )

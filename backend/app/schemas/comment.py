@@ -5,18 +5,22 @@ from datetime import datetime
 class CommentIn(BaseModel):
     text: str
     session_id: str
-    user_name: Optional[str] = None
-    is_anonymous: bool = True
+    name: Optional[str] = None
+    is_anonymous: bool = False
 
 class CommentOut(BaseModel):
     id: int
     text: str
-    parent_id: Optional[int]
-    session_id: str
+    name: Optional[str]
+    is_anonymous: bool
     created_at: datetime
+    edited: bool = False
+    updated_at: Optional[datetime] = None
+    parent_id: Optional[int] = None
     agree_count: int
     disagree_count: int
-    replies: List["CommentOut"] = []  # Ensure it's a list
+    user_reaction: Optional[str] = None
+    replies: List["CommentOut"] = []
 
     model_config = {
         "from_attributes": True

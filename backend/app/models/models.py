@@ -69,6 +69,9 @@ class Comment(Base):
     edited = Column(Boolean, default=False)
     updated_at = Column(DateTime, nullable=True)
 
+    name = Column(String, nullable=True)
+    is_anonymous = Column(Boolean, default=False)
+
 class CommentReaction(Base):
     __tablename__ = "comment_reactions"
     id = Column(Integer, primary_key=True)
