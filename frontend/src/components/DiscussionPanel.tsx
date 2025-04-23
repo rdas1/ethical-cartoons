@@ -288,7 +288,11 @@ export default function DiscussionPanel({
             onChange={(e) => setComment(e.target.value)}
             value={comment}
           />
-          
+
+          {(!isAnonymous && !name.trim() && comment.trim()) && (
+            <p className="text-red-500 text-sm">Please enter your name, or mark your comment as "Anonymous."</p>
+          )}
+
           <Button onClick={handleSubmit} disabled={comment.trim().length === 0 || isSubmitting || (!isAnonymous && !name.trim())}>
             {isSubmitting ? "Submitting..." : commentSubmitLabel}
           </Button>
