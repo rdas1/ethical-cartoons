@@ -289,7 +289,7 @@ export default function DiscussionPanel({
             value={comment}
           />
           
-          <Button onClick={handleSubmit} disabled={comment.trim().length === 0 || isSubmitting}>
+          <Button onClick={handleSubmit} disabled={comment.trim().length === 0 || isSubmitting || (!isAnonymous && !name.trim())}>
             {isSubmitting ? "Submitting..." : commentSubmitLabel}
           </Button>
         </div>
