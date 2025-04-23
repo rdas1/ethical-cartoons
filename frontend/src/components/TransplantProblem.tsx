@@ -88,7 +88,7 @@ export default function TransplantProblem({ restore = null }: TransplantProblemP
   }, [restore]);
 
   return (
-    <section className="h-screen w-full flex items-center justify-center scroll-snap-start bg-gray-50 p-4">
+    <section className="h-screen w-full flex items-center justify-center scroll-snap-start bg-gray-50 my-6">
         <div className="max-w-3xl w-full text-center">
             <h2 className="text-3xl font-semibold mb-4">Scenario 2: The Transplant Problem</h2>
             <div className="space-y-4 text-black">
@@ -115,7 +115,10 @@ export default function TransplantProblem({ restore = null }: TransplantProblemP
                 </svg>
 
                 <p>You can perform a fatal transplant operation on the healthy person, sacrificing them to save the five patients.</p>
+                <p>(Note that the healthy person has not consented to any procedure.)</p>
                 <p>What do you do?</p>
+
+                {/* TODO: Add consent complication */}
 
                 <div className="space-x-2">
                     <Button onClick={() => setDecision("sacrifice")} disabled={decision !== null}>
@@ -131,15 +134,23 @@ export default function TransplantProblem({ restore = null }: TransplantProblemP
                     )}
                 </div>
 
-                {stats && decision && (
-                    <p>
-                    You chose to <b>{decision === "sacrifice" ? "sacrifice the healthy person" : "do nothing"}</b>,
-                    causing <b>{decision === "sacrifice" ? "1" : "5"} death{decision === "spare" ? "s" : ""}</b>.<br />
-                    {decision === "sacrifice"
-                        ? `${stats.sacrifice.percent}% of respondents made the same choice. ${100 - stats.sacrifice.percent}% disagreed. (${stats.total} total responses)`
-                        : `${stats.spare.percent}% of respondents made the same choice. ${100 - stats.spare.percent}% disagreed. (${stats.total} total responses)`}
-                    </p>
-                )}
+                <div>
+                  {stats && decision ? 
+                    (
+                        <p>
+                        You chose to <b>{decision === "sacrifice" ? "sacrifice the healthy person" : "do nothing"}</b>,
+                        causing <b>{decision === "sacrifice" ? "1" : "5"} death{decision === "spare" ? "s" : ""}</b>.<br />
+                        {decision === "sacrifice"
+                            ? `${stats.sacrifice.percent}% of respondents made the same choice. ${stats.spare.percent}% disagreed. (${stats.total} total responses)`
+                            : `${stats.spare.percent}% of respondents made the same choice. ${stats.sacrifice.percent}% disagreed. (${stats.total} total responses)`}
+                        </p>
+                    )
+                    :
+                    (
+                      <p><br /><br /></p>
+                    )
+                  }
+                </div>
             </div>
         </div>
     </section>

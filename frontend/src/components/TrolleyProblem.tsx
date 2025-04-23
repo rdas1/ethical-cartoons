@@ -208,10 +208,9 @@ export default function TrolleyProblem({ restore = null }: TrolleyProblemProps) 
       // ✅ Fetch updated stats after reset
       loadStats();
     };
-    
 
   return (
-    <section className="h-screen w-full flex items-center justify-center scroll-snap-start bg-white">
+    <section className="w-full flex items-center justify-center scroll-snap-start bg-white my-6">
     <div className="max-w-3xl w-full text-center">
       <h2 className="text-3xl font-semibold mb-2">Scenario 1</h2>
       <p>(Inspired by Neal Agarwal's <Link to="https://neal.fun/absurd-trolley-problems/" className="underline">Absurd Trolley Problems</Link>)</p>
@@ -245,13 +244,20 @@ export default function TrolleyProblem({ restore = null }: TrolleyProblemProps) 
           )}
         </div>
 
-        {track && stats && (
-          <p>
-            You chose to <b>{track === "top" ? "pull the lever" : "do nothing"}</b>,
-            causing <b>{track === "top" ? "1" : "5"} death{track === "bottom" ? "s" : ""}</b>.<br />
-            {`${stats[track].percent}% of respondents made the same choice. ${100 - stats[track].percent}% disagreed. (${stats.total} total responses)`}
-          </p>
-        )}
+        <div>
+          {track && stats ? 
+            (
+              <p>
+                You chose to <b>{track === "top" ? "pull the lever" : "do nothing"}</b>,
+                causing <b>{track === "top" ? "1" : "5"} death{track === "bottom" ? "s" : ""}</b>.<br />
+                {`${stats[track].percent}% of respondents made the same choice. ${100 - stats[track].percent}% disagreed. (${stats.total} total responses)`}
+              </p>
+            ) :
+            (
+              <p><br /><br /></p>
+            )
+          }
+        </div>
         
         <svg viewBox="0 0 800 400" className="w-full h-[400px]">
           <g id="one-person">

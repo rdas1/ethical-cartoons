@@ -28,7 +28,6 @@ type DiscussionPanelProps = {
   commentPrompt?: string;
   commentSubmitLabel?: string;
   discussionSlug: string; // e.g. "trolley-vs-transplant"
-  onContinue?: () => void;
 };
 
 function findCommentById(comments: Comment[], id: number): Comment | undefined {
@@ -119,8 +118,7 @@ export default function DiscussionPanel({
   prompt,
   commentPrompt = "Why do you think people feel differently about these situations?",
   commentSubmitLabel = "Submit Comment",
-  discussionSlug,
-  onContinue,
+  discussionSlug
 }: DiscussionPanelProps) {
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState<Comment[]>([]);
@@ -243,7 +241,7 @@ export default function DiscussionPanel({
   };
 
   return (
-    <section className="h-screen w-full flex flex-col items-center justify-center scroll-snap-start bg-white p-6 text-black">
+    <section className="h-screen w-full flex flex-col items-center justify-center scroll-snap-start bg-white text-black my-6 p-6">
       <div className="max-w-3xl w-full space-y-6">
         <h2 className="text-3xl font-semibold text-center">{title}</h2>
         <p className="text-lg text-center">{prompt}</p>
@@ -298,7 +296,7 @@ export default function DiscussionPanel({
           </Button>
         </div>
 
-        <div className="mt-6">
+        <div className="my-6">
           <h3 className="text-xl font-semibold mb-2">What others have said</h3>
           <div className="max-h-64 overflow-y-auto overflow-x-auto border border-gray-200 rounded-md p-4 space-y-4 bg-gray-50">
             {comments.length > 0 ? (
@@ -319,13 +317,7 @@ export default function DiscussionPanel({
           </div>
         </div>
 
-        <p>Participation in the discussion is optional. Whenever you're ready, click the button below to continue.</p>
-
-        {onContinue && (
-          <div className="text-center mt-8">
-            <Button onClick={onContinue}>Continue to Interpretation</Button>
-          </div>
-        )}
+        {/* <p className="text-lg">Whenever you're ready, <b>scroll down</b> to continue.</p> */}
       </div>
     </section>
   );

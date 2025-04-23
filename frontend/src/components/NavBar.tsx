@@ -6,9 +6,8 @@ export default function NavBar() {
       <h1 className="text-2xl font-bold">
         <Link to="/">Ethical Cartoons</Link>
       </h1>
-      <nav className="space-x-4 text-sm">
-        <Link to="/">Homework</Link>
-        <Link to="/">Classroom</Link>
+      <nav className="space-x-2 text-sm">
+        <Link to="/">Students</Link>
         <Link to="/">Educators</Link>
         <Link to="/">About</Link>
       </nav>
