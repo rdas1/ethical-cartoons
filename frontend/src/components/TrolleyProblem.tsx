@@ -78,7 +78,7 @@ export default function TrolleyProblem({ restore = null }: TrolleyProblemProps) 
 
       const decision = track === "top" ? "pullTheLever" : "doNothing";
     
-      apiFetch("/submit/", {
+      apiFetch("/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

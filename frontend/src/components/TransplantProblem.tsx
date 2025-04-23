@@ -47,7 +47,7 @@ export default function TransplantProblem({ restore = null }: TransplantProblemP
   useEffect(() => {
     if (!decision || wasRestored) return;
 
-    apiFetch("/submit/", {
+    apiFetch("/submit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
