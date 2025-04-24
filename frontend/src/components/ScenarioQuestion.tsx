@@ -1,5 +1,5 @@
 // src/components/ScenarioQuestion.tsx
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { apiFetch } from "@/utils/api";
 import { getSessionId } from "@/utils/session";
 import { Button } from "./ui/button";

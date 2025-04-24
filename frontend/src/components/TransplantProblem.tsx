@@ -99,7 +99,7 @@ export default function TransplantProblem({ restore = null }: TransplantProblemP
                 <svg viewBox="0 0 300 80" className="w-full h-[80px] mx-auto">
                     {[0, 1, 2, 3, 4].map((i) => (
                     <g key={i} transform={`translate(${i * 60}, 0)`}>
-                        <StickFigure splat={decision === "spare"} emotion={decision === "sacrifice" ? "happy" : "distressed"} />
+                        <StickFigure dead={decision === "spare"} emotion={decision === "sacrifice" ? "happy" : "distressed"} />
                     </g>
                     ))}
                 </svg>
@@ -110,7 +110,7 @@ export default function TransplantProblem({ restore = null }: TransplantProblemP
 
                 {/* Healthy person */}
                 <svg viewBox="0 0 36.399 69.454" className="w-full h-[80px] mx-auto">
-                    <StickFigure splat={decision === "sacrifice"} emotion="happy" />
+                    <StickFigure dead={decision === "sacrifice"} emotion="happy" />
                 </svg>
 
                 <p>You can perform a fatal transplant operation on the healthy person, sacrificing them to save the five patients.</p>
@@ -121,7 +121,7 @@ export default function TransplantProblem({ restore = null }: TransplantProblemP
 
                 <div className="space-x-2">
                     <Button onClick={() => setDecision("sacrifice")} disabled={decision !== null}>
-                    Perform the Transplant Operation
+                    Perform the Operation
                     </Button>
                     <Button onClick={() => setDecision("spare")} disabled={decision !== null}>
                     Do Nothing

@@ -1,10 +1,10 @@
 type StickFigureProps = {
     emotion?: "happy" | "sad" | "distressed";
-    splat?: boolean;
+    dead?: boolean;
   };
   
-  export default function StickFigure({ emotion = "distressed", splat = false }: StickFigureProps) {
-    if (splat) {
+  export default function StickFigure({ emotion = "distressed", dead = false }: StickFigureProps) {
+    if (dead) {
         // Match the same transform as the stick figure
         return (
           <g id="Untitled">

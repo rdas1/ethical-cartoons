@@ -90,9 +90,8 @@ export default function TrolleyProblem({ restore = null }: TrolleyProblemProps) 
         .then((res) => res.json())
         .then((data) => {
           setResponseId(data.id);
+          loadStats();
         });
-    
-      loadStats();
 
       const shared = document.querySelector('#SharedPath') as SVGPathElement
       const top = document.querySelector('#TopPath') as SVGPathElement
