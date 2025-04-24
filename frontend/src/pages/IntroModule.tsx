@@ -13,7 +13,7 @@ export default function IntroModule() {
   // }, []);
 
   return (
-    <div className="w-screen overflow-y-scroll scroll-snap-y scroll-snap-mandatory">
+    <div className="w-[100%] overflow-y-scroll scroll-snap-y scroll-snap-mandatory">
       {/* NavBar */}
         <NavBar />
 
@@ -48,7 +48,7 @@ export default function IntroModule() {
         <div className="max-w-3xl w-full space-y-6">
           <h2 className="text-3xl font-semibold text-center">Interpreting the Difference</h2>
           <p className="text-lg">
-              As some of you have pointed out, there are a few key differences between the Trolley and Transplant problems.
+              As some of you have pointed out, there are a few key differences between the Trolley and Transplant problems. These include:
           </p>
           <h2 className="text-2xl font-semibold">Responsibility for the Harmful Conditions</h2>
           <p className="text-lg">
@@ -71,6 +71,9 @@ export default function IntroModule() {
           </p>
           <h2 className="text-1xl font-semibold"><u>Complicating Question:</u> What if you're not a doctor, but rather, a bystander in the waiting room? What if it's guaranteed that you will not be prosecuted for killing the healthy patient?</h2>              
 
+          <p className="text-lg">
+              And many more.
+          </p>
           {/* <blockquote className="border-l-4 border-gray-400 pl-4 italic text-gray-700">
             “It is better to let the world perish than to allow an innocent man to be put to death.” — Immanuel Kant
           </blockquote>
@@ -92,7 +95,7 @@ export default function IntroModule() {
         </p>
 
         <p className="text-lg">
-          <b>A self-driving car must decide whether to swerve and harm one pedestrian or stay its course and harm three passengers.</b> Whom should it prioritize – and why?
+          <b>A self-driving car experiencing brake failure must decide whether to swerve and harm one pedestrian or stay its course and harm three passengers.</b> Whom should it prioritize – and why?
         </p>
         <p className="text-lg">
           <b>A hospital has one ICU bed left during a disaster. </b>
@@ -100,8 +103,12 @@ export default function IntroModule() {
         </p>
 
         <p className="text-lg">
-          Ethics offers us the opportunity — and the <b>tools</b> — to analyze such situations systematically. 
-          Rather than relying solely on gut instinct, we can evaluate our values, clarify our principles, and consider the broader consequences of our actions.
+          <b>Your close friend cheated on their partner.</b> Their partner calls you, the next day, and asks if your friend was with you last night.
+          <b> What should you tell them?</b>
+        </p>
+
+        <p className="text-lg">
+          Ethics offers us the opportunity — and the <b>tools</b> — to articulate our moral values – that is, our understanding of right and wrong. These can help us make difficult decisions, and provide a framework for discussing them with others. Additionally, studying ethics can help us understand other people's perspectives, and why they might disagree with us. Perhaps most importantly, ethics can help us envision what a "good life" means to us – and how we can achieve it.
         </p>
 
         <h2 className="text-2xl font-semibold text-center">What’s Next?</h2>

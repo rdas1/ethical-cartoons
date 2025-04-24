@@ -5,15 +5,15 @@ import { Link } from "react-router-dom";
 
 const modules = [
   { title: "Introduction: Why Study Ethics?", href: "/modules/intro", disabled: false },
-  { title: "Consequentialism", href: "/modules/utilitarian", disabled: false },
-  { title: "Deontological Ethics", href: "/modules/deontological", disabled: false },
-  { title: "Virtue Ethics", href: "/modules/virtue", disabled: false },
+  { title: "Utilitarianism: Maximizing Happiness", href: "/modules/utilitarian", disabled: false },
+  { title: "Deontology: Our Moral Duties", href: "/modules/deontological", disabled: false },
+  { title: "Virtue Ethics: Character Matters", href: "/modules/virtue", disabled: false },
   { title: "More modules coming soon", href: "#", disabled: true },
 ];
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white text-black">
+    <div className="min-h-screen w-[100%] bg-white text-black">
       {/* NavBar */}
       <NavBar />
 

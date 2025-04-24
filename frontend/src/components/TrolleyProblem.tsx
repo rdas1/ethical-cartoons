@@ -212,7 +212,7 @@ export default function TrolleyProblem({ restore = null }: TrolleyProblemProps) 
   return (
     <section className="w-full flex items-center justify-center scroll-snap-start bg-white my-6">
     <div className="max-w-3xl w-full text-center">
-      <h2 className="text-3xl font-semibold mb-2">Scenario 1</h2>
+      <h2 className="text-3xl font-semibold mb-2">Scenario 1: The Trolley Problem</h2>
       <p>(Inspired by Neal Agarwal's <Link to="https://neal.fun/absurd-trolley-problems/" className="underline">Absurd Trolley Problems</Link>)</p>
       <div className="mt-4">
         <div className="space-y-4">
@@ -251,6 +251,7 @@ export default function TrolleyProblem({ restore = null }: TrolleyProblemProps) 
                 You chose to <b>{track === "top" ? "pull the lever" : "do nothing"}</b>,
                 causing <b>{track === "top" ? "1" : "5"} death{track === "bottom" ? "s" : ""}</b>.<br />
                 {`${stats[track].percent}% of respondents made the same choice. ${100 - stats[track].percent}% disagreed. (${stats.total} total responses)`}
+              <br /><b>Scroll down to continue.</b>
               </p>
             ) :
             (

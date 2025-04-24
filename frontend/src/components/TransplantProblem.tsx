@@ -60,10 +60,9 @@ export default function TransplantProblem({ restore = null }: TransplantProblemP
       .then((data) => {
         setResponseId(data.id);
         console.log("Submitted response", data);
+        loadStats();
       })
       .catch((err) => console.error("Failed to submit response", err));
-
-    loadStats();
   }, [decision]);
 
   // Restore prior state if provided
@@ -97,10 +96,10 @@ export default function TransplantProblem({ restore = null }: TransplantProblemP
                 </p>
 
                 {/* Five patients */}
-                <svg viewBox="253.425 173.546 300 80" className="w-full h-[80px] mx-auto">
+                <svg viewBox="0 0 300 80" className="w-full h-[80px] mx-auto">
                     {[0, 1, 2, 3, 4].map((i) => (
                     <g key={i} transform={`translate(${i * 60}, 0)`}>
-                        <StickFigure dead={decision === "spare"} />
+                        <StickFigure splat={decision === "spare"} emotion={decision === "sacrifice" ? "happy" : "distressed"} />
                     </g>
                     ))}
                 </svg>
@@ -110,8 +109,8 @@ export default function TransplantProblem({ restore = null }: TransplantProblemP
                 </p>
 
                 {/* Healthy person */}
-                <svg viewBox="253.425 173.546 36.399 69.454" className="w-full h-[80px] mx-auto">
-                    <StickFigure dead={decision === "sacrifice"} />
+                <svg viewBox="0 0 36.399 69.454" className="w-full h-[80px] mx-auto">
+                    <StickFigure splat={decision === "sacrifice"} emotion="happy" />
                 </svg>
 
                 <p>You can perform a fatal transplant operation on the healthy person, sacrificing them to save the five patients.</p>
@@ -137,6 +136,7 @@ export default function TransplantProblem({ restore = null }: TransplantProblemP
                 <div>
                   {stats && decision ? 
                     (
+                      
                         <p>
                         You chose to <b>{decision === "sacrifice" ? "sacrifice the healthy person" : "do nothing"}</b>,
                         causing <b>{decision === "sacrifice" ? "1" : "5"} death{decision === "spare" ? "s" : ""}</b>.<br />
