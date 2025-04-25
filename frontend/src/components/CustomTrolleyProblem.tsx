@@ -77,7 +77,7 @@ function RenderTrolleyProblemVictim({ x, y, label, labelDirection}: { x: number,
       {label && (
         <g>
         <line x1="15" y1={(labelDirection && labelDirection === "top") ? "5" : "65"} x2="0" y2={(labelDirection && labelDirection === "top") ? "-30" : "90"} stroke={'black'} strokeWidth={'2'} />
-        <text fontSize="8px" fontWeight="bold" x="-20" y={(labelDirection && labelDirection === "top") ? "-40" : "100"} fontSize="10" fill="black">{label}</text>
+        <text fontSize="10px" fontWeight="bold" x="-20" y={(labelDirection && labelDirection === "top") ? "-40" : "100"} fill="black">{label}</text>
         </g>
         )}
     </g>
@@ -231,10 +231,9 @@ export default function CustomTrolleyProblem({
       .then((res) => res.json())
       .then((data) => {
         setResponseId(data.id);
+        loadStats();
       });
   
-    loadStats();
-
     const shared = svgRef.current?.querySelector('#SharedPath') as SVGPathElement
     const top = svgRef.current?.querySelector('#TopPath') as SVGPathElement
     const bottom = svgRef.current?.querySelector('#BottomPath') as SVGPathElement
@@ -392,15 +391,15 @@ export default function CustomTrolleyProblem({
               <p>
                 You chose to <b>{track === "top" ? "pull the lever" : "do nothing"}</b>,
                 causing <b>{track === "top" ? "1" : "5"} death{track === "bottom" ? "s" : ""}</b>.<br />
-                {`${stats[track].percent}% of respondents made the same choice. ${100 - stats[track].percent}% disagreed. (${stats.total} total responses)`}
-              <br /><b>Scroll down to continue.</b>
+                {`${stats[track].percent}% of respondents made the same choice. ${stats[track === "top" ? "bottom" : "top"].percent}% disagreed. (${stats.total} total responses)`}
+                {postResponseText && <p><br/>{postResponseText}</p>}
               </p>
             ) :
             (
               <p></p>
             )
           }
-          {track && postResponseText && <p>{postResponseText}</p>}
+          
         </div>
         
         <svg viewBox="0 0 800 400" className="w-full h-full mt-[-2em]" ref={svgRef}>

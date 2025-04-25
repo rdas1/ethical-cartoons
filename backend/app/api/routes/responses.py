@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session, joinedload
 from app.db.db import get_db
 from app.models.models import Scenario, DecisionOption, Response, Module
 from app.schemas.response import ResponseIn, ResponseOut
+# from app.db.helpers import get_or_create_scenario
 
 router = APIRouter()
 
@@ -42,6 +43,12 @@ def submit_response(response: ResponseIn, db: Session = Depends(get_db)):
 @router.get("/stats/{scenario_name}")
 def get_stats(scenario_name: str, db: Session = Depends(get_db)):
     scenario = get_scenario_by_name(db, scenario_name)
+    if not scenario:
+        # No stats yet, return empty
+        return {
+            "total": 0
+        }
+    # scenario = get_or_create_scenario(db, scenario_name)
     option_counts = {
         opt.label: db.query(Response).filter(Response.option_id == opt.id).count()
         for opt in scenario.options
@@ -59,6 +66,7 @@ def get_stats(scenario_name: str, db: Session = Depends(get_db)):
 @router.get("/last_decision")
 def get_last_decision(scenario_name: str, session_id: str, db: Session = Depends(get_db)):
     scenario = get_scenario_by_name(db, scenario_name)
+    # scenario = get_or_create_scenario(db, scenario_name)
     response = db.query(Response).options(joinedload(Response.option)).filter(
         Response.scenario == scenario,
         Response.session_id == session_id

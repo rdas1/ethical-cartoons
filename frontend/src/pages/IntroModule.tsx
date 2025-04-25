@@ -3,14 +3,14 @@ import ModuleRestorePrompt from "@/components/ModuleRestorePrompt";
 import NavBar from "@/components/NavBar";
 import TransplantProblem from "@/components/TransplantProblem";
 import TrolleyVsTransplantDiscussionPanel from "@/components/TrolleyVsTransplantDiscussionPanel";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function IntroModule() {
 
   const [restoredResponses, setRestoredResponses] = useState<Record<string, string> | null>(null);
-  // useEffect(() => {
-  //   window.scrollTo(0, 0); // Always start at top
-  // }, []);
+  useEffect(() => {
+    window.scrollTo(0, 0); // Always start at top
+  }, []);
 
   return (
     <div className="w-[100%] overflow-y-scroll scroll-snap-y scroll-snap-mandatory">

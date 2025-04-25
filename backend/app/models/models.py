@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, UniqueConstraint, DateTime, Text, Boolean
 from sqlalchemy.orm import relationship, declarative_base
-from datetime import datetime
+from datetime import datetime, timezone
 
 Base = declarative_base()
 
@@ -16,6 +16,12 @@ class Scenario(Base):
     name = Column(String, unique=True, nullable=False)
     module_id = Column(Integer, ForeignKey("modules.id"))
     module = relationship("Module", back_populates="scenarios")
+    question_text = Column(Text, nullable=True)
+    post_response_text = Column(Text, nullable=True)
+    scenario_type = Column(String, nullable=False)  # 'trolley', 'transplant', 'question'
+    top_track_label = Column(String, nullable=True)
+    bottom_track_label = Column(String, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
     responses = relationship("Response", back_populates="scenario")
     options = relationship("DecisionOption", back_populates="scenario", cascade="all, delete-orphan")
 
@@ -56,7 +62,7 @@ class Comment(Base):
     parent_id = Column(Integer, ForeignKey("comments.id"), nullable=True)
     text = Column(String, nullable=False)
     session_id = Column(String, index=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    # created_at = Column(DateTime, default=datetime.utcnow)
 
     agree_count = Column(Integer, default=0)
     disagree_count = Column(Integer, default=0)

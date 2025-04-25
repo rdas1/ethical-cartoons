@@ -1,0 +1,30 @@
+{
+    "module_name": "Utilitarianism",
+    "scenarios": [
+      {
+        "name": "utilitarianism-intro-trolley-classic",
+        "type": "trolley_problem",
+        "options": [
+          {"label": "Pull the lever", "description": "Divert the trolley to kill one person."},
+          {"label": "Do nothing", "description": "Allow the trolley to kill five people."}
+        ]
+      },
+      {
+        "name": "utilitarianism-intro-trolley-cancer",
+        "type": "trolley_problem",
+        "options": [
+          {"label": "Pull the lever", "description": "Divert the trolley toward the cancer-curing scientist."},
+          {"label": "Do nothing", "description": "Let five oil lobbyists die."}
+        ]
+      },
+      {
+        "name": "repugnant-conclusion",
+        "type": "scenario_question",
+        "options": [
+          {"label": "World A's population", "description": "A larger population with moderate happiness."},
+          {"label": "World B's population", "description": "A smaller population with maximal happiness."}
+        ]
+      }
+    ]
+  }
+  

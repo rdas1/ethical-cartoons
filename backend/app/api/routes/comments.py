@@ -13,7 +13,7 @@ def get_comments(slug: str, db: Session = Depends(get_db)):
     thread = db.query(DiscussionThread).filter_by(slug=slug).first()
     if not thread:
         raise HTTPException(status_code=404, detail="Discussion thread not found")
-    comments = db.query(Comment).filter_by(thread_id=thread.id).order_by(Comment.created_at.desc()).all()
+    comments = db.query(Comment).filter_by(thread_id=thread.id).order_by(Comment.updated_at.desc()).all()
     return {"comments": comments}
 
 @router.post("/{slug}")

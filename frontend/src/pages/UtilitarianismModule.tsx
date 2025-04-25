@@ -1,18 +1,32 @@
 // src/pages/UtilitarianismModule.tsx
 import CustomTrolleyProblem from "@/components/CustomTrolleyProblem";
 import DiscussionPanel from "@/components/DiscussionPanel";
+// import ModuleRestorePrompt from "@/components/ModuleRestorePrompt";
 import NavBar from "@/components/NavBar";
 import ScenarioQuestion from "@/components/ScenarioQuestion";
 import StickFigure from "@/components/StickFigure";
+import { useEffect } from "react";
+// import { useState, useEffect } from "react";
+
 
 export default function UtilitarianismModule() {
 
   const MANY = 20;
   const FEW = 5;
 
+  // const [restoredResponses, setRestoredResponses] = useState<Record<string, string> | null>(null);
+  useEffect(() => {
+    window.scrollTo(0, 0); // Always start at top
+  }, []);
+  
   return (
     <div className="w-[100%] overflow-y-scroll scroll-snap-y scroll-snap-mandatory">
       <NavBar />
+
+      {/* <ModuleRestorePrompt
+        moduleName="Utilitarianism"
+        onRestore={(responses) => setRestoredResponses(responses)}
+      /> */}
 
       {/* Panel 1: Intro to Utilitarianism */}
       <section className="scroll-snap-start w-full flex flex-col items-center justify-center bg-white pt-12 px-6 text-black space-y-6">
@@ -46,7 +60,7 @@ export default function UtilitarianismModule() {
 
       {/* Section 2: Custom trolley problems */}
       <section className="scroll-snap-start w-[100%] flex flex-col items-center justify-center text-center bg-white pt-12 px-6 text-black space-y-6">
-        <CustomTrolleyProblem scenarioName="custom-trolley-test-1" 
+        <CustomTrolleyProblem scenarioName="utilitarianism-intro-trolley-classic" 
                               sectionLabel="The Trolley Problem: Classic Edition"
                               questionText={<>What would you do <b>in order to maximize overall happiness</b>?</>}
                               numberOfBottomTrackVictims={5} numberOfTopTrackVictims={1} 
@@ -60,7 +74,7 @@ export default function UtilitarianismModule() {
         <br/><br/>What if the five people on the bottom track are <br/><b>oil lobbyists</b> who knowingly <b>cause cancer</b>?</p>
 
         {/* <p className="text-lg">What if we knew a little bit more about the people tied to the tracks?</p>   */}
-        <CustomTrolleyProblem scenarioName="custom-trolley-test-2" 
+        <CustomTrolleyProblem scenarioName="utilitarianism-intro-trolley-cancer" 
                               sectionLabel="The Trolley Problem: Cancer Edition"
                               questionText={<>What would you do <b>in order to maximize overall happiness</b>?</>}
                               numberOfBottomTrackVictims={5} numberOfTopTrackVictims={1} 
@@ -69,6 +83,11 @@ export default function UtilitarianismModule() {
                               bottomTrackLabels={["Oil Lobbyist",]}
                               topTrackVictimsAdditionalDescription={<><br/>This person is a <b>scientist</b> researching a <b>cure for cancer</b>.<br/></>}
                               bottomTrackVictimsAdditionalDescription={<><br/>They are all <b>oil lobbyists</b> who knowingly <b>cause cancer</b> in some of their factory employees.<br/><br/></>}
+                              // restore={
+                              //   restoredResponses?.['utilitarianism-intro-trolley-cancer'] === "pullTheLever" || restoredResponses?.['utilitarianism-intro-trolley-cancer'] === "doNothing"
+                              //     ? restoredResponses?.['utilitarianism-intro-trolley-cancer'] === "pullTheLever" ? "top" : "bottom"
+                              //     : null
+                              // }
                               />
 
         <p className="text-lg">
@@ -103,7 +122,7 @@ export default function UtilitarianismModule() {
         <p><b>(Scroll down for some relevant challenges)</b></p>
       </section>
 
-      <section className="scroll-snap-start w-[100%] flex flex-col items-center justify-center text-center bg-white pt-12 px-6 text-black space-y-6">
+      <section className="scroll-snap-start w-[100%] flex flex-col items-center justify-center bg-white pt-12 px-6 text-black space-y-6">
       {/* Panel 4: Poll about The Repugnant Conclusion */}
       <ScenarioQuestion
         scenarioName="repugnant-conclusion"
@@ -122,34 +141,31 @@ export default function UtilitarianismModule() {
           </>
         }
         options={[
-          { label: "World A's population", value: "larger_population" },
-          { label: "World B's population", value: "smaller_population" },
+          { label: "World A's population", value: "worldA" },
+          { label: "World B's population", value: "worldB" },
         ]}
       />
       <DiscussionPanel discussionSlug="repugnant-conclusion" placeholder="Which group is better off, and why?" />
       </section>
 
-      <section className="scroll-snap-start w-[100%] flex flex-col items-center justify-center text-center bg-white pt-12 px-6 text-black space-y-6">
+      <section className="scroll-snap-start w-[100%] flex flex-col items-center justify-center bg-white pt-12 px-6 text-black space-y-6">
       {/* Panel 5: Poll about Something */}
       <ScenarioQuestion
         scenarioName="repugnant-conclusion"
-        title="Challenge 2: Population Size, Health, and Happiness"
+        title="Challenge 2: Labor Conditions"
         question={
           <>
-            <div className="text-center">
-            Suppose there are two worlds:<br /><br />
-              <b>World A</b>: <br />1 billion healthy people, who each rate their happiness at 4 out 10.
+            Suppose that a cure for cancer has been has been invented, but it is very labor-intensive to produce.<br/><br/>It can be produced in two different ways:<br /><br />
+              <b>Mass Production (with bad working conditions)</b>: <br />Doses for every cancer patient can be produced within a year, but 1 million pharmaceutical workers will have to work long hours with terrible pay.
               <br /><br />
-              <b>World B</b>: <br />40,000 sickly people, who each rate their happiness at 10 out of 10.
+              <b>Slower Production (with fair working conditions)</b>: <br />Doses for only 10% of the world's cancer patient can be produced within a year, but 1 million pharmaceutical workers will earn fair wages.
               <br /><br />
-              <b>Which group is better off?</b>
-
-            </div>
+              <b>Which is more ethical, from a utilitarian perspective?</b>
           </>
         }
         options={[
-          { label: "World A's population", value: "larger_population" },
-          { label: "World B's population", value: "smaller_population" },
+          { label: "Mass Production", value: "larger_population" },
+          { label: "Labor Conditions", value: "smaller_population" },
         ]}
       />
       <DiscussionPanel discussionSlug="repugnant-conclusion" placeholder="Which group is better off, and why?" />

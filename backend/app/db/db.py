@@ -26,7 +26,7 @@ def seed_data():
     for scenario_name, options in default_options.items():
         scenario = db.query(Scenario).filter_by(name=scenario_name).first()
         if not scenario:
-            scenario = Scenario(name=scenario_name, module=intro)
+            scenario = Scenario(name=scenario_name, module=intro, scenario_type=scenario_name)
             db.add(scenario)
             db.commit()
             db.refresh(scenario)
@@ -43,6 +43,7 @@ def seed_data():
         db.add(thread)
 
     db.commit()
+
     db.close()
 
 def get_db() -> Generator[Session, None, None]:
@@ -51,3 +52,4 @@ def get_db() -> Generator[Session, None, None]:
         yield db
     finally:
         db.close()
+
