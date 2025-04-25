@@ -94,7 +94,7 @@ export default function UtilitarianismModule() {
           In this case, the <b>utilitarian choice</b> is less clear – or perhaps, <b>less palatable</b>.
         </p>
         <p className="text-lg">
-          If we assume that the scientist will cure cancer – or accelerate efforts to cure it –<br /> then the <b>utilitarian choice</b> might be to <b>pull the lever</b> and save the five oil lobbyists.
+          If we assume that the scientist will cure cancer – or accelerate efforts to cure it –<br /> then the <b>utilitarian choice</b> might be to <b>do nothing</b> and kill the five oil lobbyists.
         </p>
         <p className="text-lg">
           But this is a very different choice than the one most of us made before,<br/> when we were just trying to save the most lives from death by trolley.
