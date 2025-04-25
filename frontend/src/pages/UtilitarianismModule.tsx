@@ -1,5 +1,6 @@
 // src/pages/UtilitarianismModule.tsx
 import CustomTrolleyProblem from "@/components/CustomTrolleyProblem";
+import DiscussionPanel from "@/components/DiscussionPanel";
 import NavBar from "@/components/NavBar";
 import ScenarioQuestion from "@/components/ScenarioQuestion";
 import StickFigure from "@/components/StickFigure";
@@ -14,11 +15,12 @@ export default function UtilitarianismModule() {
       <NavBar />
 
       {/* Panel 1: Intro to Utilitarianism */}
-      <section className="scroll-snap-start h-screen w-full flex flex-col items-center justify-center bg-white p-6 text-black">
+      <section className="scroll-snap-start w-full flex flex-col items-center justify-center bg-white pt-12 px-6 text-black space-y-6">
         <div className="max-w-3xl space-y-6 text-center">
+          <br />
           <h1 className="text-3xl font-semibold">Utilitarianism: Maximizing Happiness</h1>
           <p className="text-lg">
-            Utilitarianism says that the morally right action is the one that <b>maximizes happiness</b> – or "utility" – <b>for the greatest number of people</b>.
+            Utilitarianism says that the morally right action is the one that <br/><b>maximizes <u>happiness</u> – or <i>"utility"</i> – for the greatest number of people</b>.
           </p>
           <p className="text-lg italic">"The greatest happiness of the greatest number is the foundation of morals and legislation." — Jeremy Bentham</p>
           <p className="text-lg">This means that the happiness of the many...</p>
@@ -37,48 +39,120 @@ export default function UtilitarianismModule() {
               </g>
             ))}
           </svg>
-          <p className="text-lg">This simplifies certain decisions in useful and intuitive ways.<br /> Consider, for example, the classic trolley problem we encountered earlier:</p>
-          <p className="text-lg"></p>
+          <p className="text-lg">This idea <b>simplifies certain decisions</b> in useful and intuitive ways.<br /> Consider, for example, the <b>classic trolley problem</b> we encountered earlier:</p>
           {/* <p className="text-md font-semibold">(Scroll down to continue)</p> */}
         </div>
       </section>
 
-      {/* CUSTOM TROLLEY PROBLEM TEST */}
-      <section className="scroll-snap-start h-screen w-full flex flex-col items-center justify-center bg-white p-6 text-black">
-        <CustomTrolleyProblem sectionLabel="The Trolley Problem, Revisited (Part 1)" numberOfBottomTrackVictims={2} numberOfTopTrackVictims={1} scenarioName="custom-trolley-test-1"/>
+      {/* Section 2: Custom trolley problems */}
+      <section className="scroll-snap-start w-[100%] flex flex-col items-center justify-center text-center bg-white pt-12 px-6 text-black space-y-6">
+        <CustomTrolleyProblem scenarioName="custom-trolley-test-1" 
+                              sectionLabel="The Trolley Problem: Classic Edition"
+                              questionText={<>What would you do <b>in order to maximize overall happiness</b>?</>}
+                              numberOfBottomTrackVictims={5} numberOfTopTrackVictims={1} 
+                              />
+        <p className="text-lg">In this case, the <b>utilitarian choice</b> is fairly clear: <b>pull the lever</b> to save the five people on the bottom track.</p>
+        <p className="text-lg">This is based on the (very reasonable) idea that the "happiest" outcome is the one with the <b>fewest deaths.</b></p>
+        <br />
+        <p className="text-2xl"><b>But "happiness" can be a tricky thing to measure.</b></p>
+        <br/>
+        <p className="text-lg">What if the one person on the top track is a<br/> <b>scientist</b> researching a <b>cure for cancer</b>?
+        <br/><br/>What if the five people on the bottom track are <br/><b>oil lobbyists</b> who knowingly <b>cause cancer</b>?</p>
+
+        {/* <p className="text-lg">What if we knew a little bit more about the people tied to the tracks?</p>   */}
+        <CustomTrolleyProblem scenarioName="custom-trolley-test-2" 
+                              sectionLabel="The Trolley Problem: Cancer Edition"
+                              questionText={<>What would you do <b>in order to maximize overall happiness</b>?</>}
+                              numberOfBottomTrackVictims={5} numberOfTopTrackVictims={1} 
+                              showLabels={true}
+                              topTrackLabels={["Cancer-Curing Scientist",]}
+                              bottomTrackLabels={["Oil Lobbyist",]}
+                              topTrackVictimsAdditionalDescription={<><br/>This person is a <b>scientist</b> researching a <b>cure for cancer</b>.<br/></>}
+                              bottomTrackVictimsAdditionalDescription={<><br/>They are all <b>oil lobbyists</b> who knowingly <b>cause cancer</b> in some of their factory employees.<br/><br/></>}
+                              />
+
+        <p className="text-lg">
+          In this case, the <b>utilitarian choice</b> is less clear – or perhaps, <b>less palatable</b>.
+        </p>
+        <p className="text-lg">
+          If we assume that the scientist will cure cancer – or accelerate efforts to cure it –<br /> then the <b>utilitarian choice</b> might be to <b>pull the lever</b> and save the five oil lobbyists.
+        </p>
+        <p className="text-lg">
+          But this is a very different choice than the one most of us made before,<br/> when we were just trying to save the most lives from death by trolley.
+        </p>
+        <p className="text-lg">
+          If we make this choice,<br/>how do we reconcile the discomfiting notion of allowing five people to die<br/> in order to save one person who is "worth more"?
+        </p>
+        <p className="text-lg">
+          Making value judgements on human lives is a very uncomfortable thing to do –<br/>especially when we assign different values to different categories of people.
+          <br/>(At its extreme, this idea can manifest in gross discrimination through <u><a href="https://en.wikipedia.org/wiki/Eugenics">eugenics</a></u>.)
+        </p>
       </section>
 
-      {/* Panel 2: Application Example */}
-      <section className="scroll-snap-start h-screen w-full flex flex-col items-center justify-center bg-white p-6 text-black">
-        <div className="max-w-3xl space-y-6 text-center">
-          <h2 className="text-2xl font-semibold">Utilitarianism in Action: Example 1</h2>
-          {/* Example: Classic Trolley Problem */}
-          <p className="text-lg">
-            Suppose you’re allocating scarce hospital resources. One patient has a rare condition and will require extensive care. 
-            Three others have treatable injuries that require less intensive support. Who should you prioritize?
-          </p>
-        </div>
+      <section className="scroll-snap-start my-[30vh] w-full flex flex-col items-center justify-center bg-white p-6 text-black text-center">
+        <p className="text-3xl">
+          These questions are all examples of <br/><b>the utilitarian dilemma</b>.
+        </p>
+        <br/>
+        <br/>
+        <p className="text-2xl">
+          How do we measure happiness?
+        </p>
+        <br/>
+        <br/>
+        <p><b>(Scroll down for some relevant challenges)</b></p>
       </section>
 
-      {/* Panel 3: Scenario Question */}
+      <section className="scroll-snap-start w-[100%] flex flex-col items-center justify-center text-center bg-white pt-12 px-6 text-black space-y-6">
+      {/* Panel 4: Poll about The Repugnant Conclusion */}
       <ScenarioQuestion
-        scenarioName="utilitarian-hospital-scarcity"
-        question="You can save either one person with a rare disease, or three people with common injuries. Who do you treat?"
+        scenarioName="repugnant-conclusion"
+        title="Challenge 1: Population Size"
+        question={
+          <>
+            <div className="text-center">
+            Suppose there are two worlds:<br /><br />
+              <b>World A</b>: <br />1 billion healthy people, who each rate their happiness at 4 out 10.
+              <br /><br />
+              <b>World B</b>: <br />40,000 sickly people, who each rate their happiness at 10 out of 10.
+              <br /><br />
+              <b>Which group is better off?</b>
+
+            </div>
+          </>
+        }
         options={[
-          { label: "Save the one with the rare disease", value: "save_one" },
-          { label: "Save the three with common injuries", value: "save_three" },
+          { label: "World A's population", value: "larger_population" },
+          { label: "World B's population", value: "smaller_population" },
         ]}
       />
+      <DiscussionPanel discussionSlug="repugnant-conclusion" placeholder="Which group is better off, and why?" />
+      </section>
 
-      {/* Panel 4: The Repugnant Conclusion */}
-      <section className="scroll-snap-start h-screen w-full flex flex-col items-center justify-center bg-white p-6 text-black">
-        <div className="max-w-3xl space-y-6 text-center">
-          <h2 className="text-2xl font-semibold">A Challenge: The Repugnant Conclusion</h2>
-          <p className="text-lg">
-            If the goal is to maximize happiness, would a world with a vast number of barely-happy people be better than a world with fewer but very happy people?
-            This is known as the “Repugnant Conclusion,” and it challenges some versions of utilitarian thinking.
-          </p>
-        </div>
+      <section className="scroll-snap-start w-[100%] flex flex-col items-center justify-center text-center bg-white pt-12 px-6 text-black space-y-6">
+      {/* Panel 5: Poll about Something */}
+      <ScenarioQuestion
+        scenarioName="repugnant-conclusion"
+        title="Challenge 2: Population Size, Health, and Happiness"
+        question={
+          <>
+            <div className="text-center">
+            Suppose there are two worlds:<br /><br />
+              <b>World A</b>: <br />1 billion healthy people, who each rate their happiness at 4 out 10.
+              <br /><br />
+              <b>World B</b>: <br />40,000 sickly people, who each rate their happiness at 10 out of 10.
+              <br /><br />
+              <b>Which group is better off?</b>
+
+            </div>
+          </>
+        }
+        options={[
+          { label: "World A's population", value: "larger_population" },
+          { label: "World B's population", value: "smaller_population" },
+        ]}
+      />
+      <DiscussionPanel discussionSlug="repugnant-conclusion" placeholder="Which group is better off, and why?" />
       </section>
 
       {/* Panel 5: Reflection/Transition */}

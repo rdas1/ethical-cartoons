@@ -1,7 +1,7 @@
+import CustomTrolleyProblem from "@/components/CustomTrolleyProblem";
 import ModuleRestorePrompt from "@/components/ModuleRestorePrompt";
 import NavBar from "@/components/NavBar";
 import TransplantProblem from "@/components/TransplantProblem";
-import TrolleyProblem from "@/components/TrolleyProblem";
 import TrolleyVsTransplantDiscussionPanel from "@/components/TrolleyVsTransplantDiscussionPanel";
 import { useState } from "react";
 
@@ -23,13 +23,22 @@ export default function IntroModule() {
         />
 
       {/* Page 1: Trolley Problem */}
-      <TrolleyProblem 
+      <section className="w-full flex items-center justify-center scroll-snap-start bg-white my-6 p-6">
+        <CustomTrolleyProblem scenarioName="trolley" restore={
+                    restoredResponses?.trolley === "pullTheLever" || restoredResponses?.trolley === "doNothing"
+                      ? restoredResponses.trolley === "pullTheLever" ? "top" : "bottom"
+                      : null
+                  }
+          />
+      </section>
+
+      {/* <TrolleyProblem 
                 restore={
                   restoredResponses?.trolley === "pullTheLever" || restoredResponses?.trolley === "doNothing"
                     ? restoredResponses.trolley === "pullTheLever" ? "top" : "bottom"
                     : null
                 }
-              />
+              /> */}
 
       {/* Page 2: Transplant Problem */}
       <TransplantProblem 

@@ -6,11 +6,12 @@ import { Button } from "./ui/button";
 
 type ScenarioQuestionProps = {
   scenarioName: string;
-  question: string;
+  title?: string | React.ReactNode;
+  question: string | React.ReactNode;
   options: { label: string; value: string }[];
 };
 
-export default function ScenarioQuestion({ scenarioName, question, options }: ScenarioQuestionProps) {
+export default function ScenarioQuestion({ scenarioName, title, question, options }: ScenarioQuestionProps) {
   const sessionId = getSessionId();
   const [selected, setSelected] = useState<string | null>(null);
   const [stats, setStats] = useState<Record<string, { percent: number; count: number }> | null>(null);
@@ -30,9 +31,11 @@ export default function ScenarioQuestion({ scenarioName, question, options }: Sc
   };
 
   return (
-    <section className="scroll-snap-start h-screen w-full flex flex-col items-center justify-center bg-white p-6 text-black">
       <div className="max-w-2xl w-full space-y-6 text-center">
-        <h2 className="text-2xl font-semibold">{question}</h2>
+        {title && (
+          <h1 className="text-3xl font-semibold">{title}</h1>
+        )}
+        <h2 className="text-2xl">{question}</h2>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           {options.map((opt) => (
             <Button
@@ -57,6 +60,5 @@ export default function ScenarioQuestion({ scenarioName, question, options }: Sc
           </div>
         )}
       </div>
-    </section>
   );
 }

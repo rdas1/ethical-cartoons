@@ -23,9 +23,9 @@ export type Comment = {
 };
 
 type DiscussionPanelProps = {
-  title: string;
-  prompt: string;
-  commentPrompt?: string;
+  title?: string;
+  prompt?: string;
+  placeholder?: string;
   commentSubmitLabel?: string;
   discussionSlug: string; // e.g. "trolley-vs-transplant"
 };
@@ -116,7 +116,7 @@ function nestComments(flatComments: Comment[]): Comment[] {
 export default function DiscussionPanel({
   title,
   prompt,
-  commentPrompt = "Why do you think people feel differently about these situations?",
+  placeholder = "Why do you think people feel differently about these situations?",
   commentSubmitLabel = "Submit Comment",
   discussionSlug
 }: DiscussionPanelProps) {
@@ -241,10 +241,13 @@ export default function DiscussionPanel({
   };
 
   return (
-    <section className="h-screen w-full flex flex-col items-center justify-center scroll-snap-start bg-white text-black my-6 p-6">
       <div className="max-w-3xl w-full space-y-6">
-        <h2 className="text-3xl font-semibold text-center">{title}</h2>
-        <p className="text-lg text-center">{prompt}</p>
+        {title && (
+          <h2 className="text-3xl font-semibold text-center">{title}</h2>
+        )}
+        {prompt && (
+          <p className="text-lg text-center">{prompt}</p>
+        )}
 
         <div className="space-y-2">
           <label htmlFor="userComment" className="block font-medium">
@@ -281,7 +284,7 @@ export default function DiscussionPanel({
 
           <textarea
             id="userComment"
-            placeholder={commentPrompt}
+            placeholder={placeholder}
             className="w-full border border-gray-300 rounded-lg p-3 resize-none min-h-[100px]"
             onChange={(e) => setComment(e.target.value)}
             value={comment}
@@ -319,6 +322,5 @@ export default function DiscussionPanel({
 
         {/* <p className="text-lg">Whenever you're ready, <b>scroll down</b> to continue.</p> */}
       </div>
-    </section>
   );
 }

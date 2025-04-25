@@ -6,6 +6,7 @@ import { getSessionId } from '@/utils/session'
 import { apiFetch } from '@/utils/api'
 import { Link } from 'react-router-dom'
 import StickFigure from './StickFigure'
+import React from 'react'
 
 type Victim = {
     id: string;
@@ -13,12 +14,19 @@ type Victim = {
 }
 
 type CustomTrolleyProblemProps = {
-    sectionLabel?: string;
-    restore?: 'top' | 'bottom' | null;
-    numberOfTopTrackVictims?: number;
-    numberOfBottomTrackVictims?: number;
-    scenarioName: string; // optionally override the scenario for response tracking
-  };
+  scenarioName: string; // optionally override the scenario for response tracking
+  sectionLabel?: string | React.ReactNode;
+  questionText?: string | React.ReactNode; // Updated to allow string or React fragment
+  postResponseText?: string | React.ReactNode; // Updated to allow string or React fragment
+  restore?: 'top' | 'bottom' | null;
+  numberOfTopTrackVictims?: number;
+  numberOfBottomTrackVictims?: number;
+  showLabels?: boolean;
+  topTrackLabels?: string[];
+  bottomTrackLabels?: string[];
+  topTrackVictimsAdditionalDescription?: string | React.ReactNode;
+  bottomTrackVictimsAdditionalDescription?: string | React.ReactNode;
+};
 
 gsap.registerPlugin(MotionPathPlugin)
 
@@ -61,46 +69,83 @@ function getEvenlySpacedPointsCentered(
 }
 
 
-function RenderTrolleyProblemVictim({ x, y, label }: { x: number, y: number, label?: string }) {
+function RenderTrolleyProblemVictim({ x, y, label, labelDirection}: { x: number, y: number, label?: string | undefined, labelDirection?: "top" | "bottom" | undefined }) {
   y -= 30;
-  console.log("Rendering victim at:", x, y);
   return (
     <g transform={`translate(${x}, ${y})`}>
       <StickFigure />
-      {/* {label && <text y="90" fontSize="10" fill="black">{label}</text>} */}
+      {label && (
+        <g>
+        <line x1="15" y1={(labelDirection && labelDirection === "top") ? "5" : "65"} x2="0" y2={(labelDirection && labelDirection === "top") ? "-30" : "90"} stroke={'black'} strokeWidth={'2'} />
+        <text fontSize="8px" fontWeight="bold" x="-20" y={(labelDirection && labelDirection === "top") ? "-40" : "100"} fontSize="10" fill="black">{label}</text>
+        </g>
+        )}
     </g>
   )
 }
 
-export default function CustomTrolleyProblem({ sectionLabel="The Trolley Problem", restore=null, numberOfTopTrackVictims=1, numberOfBottomTrackVictims=5, scenarioName = "trolley" }: CustomTrolleyProblemProps) {
+export default function CustomTrolleyProblem({ 
+  scenarioName = "trolley",
+  sectionLabel="The Trolley Problem", 
+  questionText="What do you do?",
+  postResponseText="",
+  restore=null,
+  numberOfTopTrackVictims=1, 
+  numberOfBottomTrackVictims=5,
+  showLabels=false,
+  topTrackLabels=[],
+  bottomTrackLabels=[],
+  topTrackVictimsAdditionalDescription="",
+  bottomTrackVictimsAdditionalDescription=""
+  }: CustomTrolleyProblemProps) {
 
-  const topTrackVictims: Victim[] = [...Array(numberOfTopTrackVictims)].map((_, i) => ({id: `top-${i}`, label: `Top Victim ${i + 1}`}));
-  const bottomTrackVictims: Victim[] = [...Array(numberOfBottomTrackVictims)].map((_, i) => ({id: `bottom-${i}`, label: `Bottom Victim ${i + 1}`}));  
+  const trolleyId = `trolley-${scenarioName}`;
+
+  if (showLabels) {
+    if (topTrackLabels && topTrackLabels.length !== numberOfTopTrackVictims) {
+      if (topTrackLabels.length == 1) {
+        topTrackLabels = [...Array(numberOfTopTrackVictims)].map(() => topTrackLabels[0]);
+      }
+      else {
+        console.error("Top track labels length does not match number of top track victims");
+        topTrackLabels = [...Array(numberOfTopTrackVictims)].map(() => "");
+      }  
+    }
+    if (bottomTrackLabels && bottomTrackLabels.length !== numberOfBottomTrackVictims) {
+      if (bottomTrackLabels.length == 1) {
+        bottomTrackLabels = [...Array(numberOfBottomTrackVictims)].map(() => bottomTrackLabels[0]);
+      }
+      else {
+        console.error("Bottom track labels length does not match number of bottom track victims");
+        bottomTrackLabels = [...Array(numberOfBottomTrackVictims)].map(() => "");
+      }
+    }
+  }
+  else {
+    topTrackLabels = [...Array(numberOfTopTrackVictims)].map(() => "");
+    bottomTrackLabels = [...Array(numberOfBottomTrackVictims)].map(() => "");
+  }
+    
+  const topTrackVictims: Victim[] = [...Array(numberOfTopTrackVictims)].map((_, i) => ({id: `top-${i}`, label: topTrackLabels ? topTrackLabels[i] : ""}));
+  const bottomTrackVictims: Victim[] = [...Array(numberOfBottomTrackVictims)].map((_, i) => ({id: `bottom-${i}`, label: bottomTrackLabels ? bottomTrackLabels[i] : ""}));
   
   const [topVictimPoints, setTopVictimPoints] = useState<{ x: number, y: number }[]>([])
   const [bottomVictimPoints, setBottomVictimPoints] = useState<{ x: number, y: number }[]>([])
   
   useEffect(() => {
-    const defaultPath = document.querySelector('#default-victims-path') as SVGPathElement
-    const altPath = document.querySelector('#alternate-victims-path') as SVGPathElement
+    const defaultPath = svgRef.current?.querySelector('#default-victims-path') as SVGPathElement
+    const altPath = svgRef.current?.querySelector('#alternate-victims-path') as SVGPathElement
 
     if (!defaultPath || !altPath) {
       console.error("Paths not found");
       return;
     }
-    console.log("inside useEffect");
-    console.log("topTrackVictims?.length", topTrackVictims?.length || 0);
-    console.log("bottomTrackVictims?.length:", bottomTrackVictims?.length || 0);
-    console.log("defaultPath:", defaultPath || "null");
-    console.log("altPath:", altPath || "null");
     if (topTrackVictims?.length && defaultPath) {
       setTopVictimPoints(getEvenlySpacedPointsCentered(defaultPath, topTrackVictims.length))
-      console.log("topVictimPoints:", topVictimPoints);
     }
   
     if (bottomTrackVictims?.length && altPath) {
       setBottomVictimPoints(getEvenlySpacedPointsCentered(altPath, bottomTrackVictims.length))
-      console.log("bottomVictimPoints:", bottomVictimPoints);
     }
   }, [])
 
@@ -113,6 +158,7 @@ export default function CustomTrolleyProblem({ sectionLabel="The Trolley Problem
 
   const sessionId = getSessionId();
 
+  const svgRef = useRef<SVGSVGElement>(null);
   const trolleyRef = useRef<SVGSVGElement>(null)
   const [track, setTrack] = useState<'top' | 'bottom' | null>(null);
   const [trackTrigger, setTrackTrigger] = useState(0); // <-- new trigger    
@@ -148,11 +194,11 @@ export default function CustomTrolleyProblem({ sectionLabel="The Trolley Problem
 
 
   useEffect(() => {
-      if (!trolleyRef.current) return;
-    
-      const shared = document.querySelector('#SharedPath') as SVGPathElement;
-      const top = document.querySelector('#TopPath') as SVGPathElement;
-      const bottom = document.querySelector('#BottomPath') as SVGPathElement;
+    if (!trolleyRef.current || !svgRef.current) return;
+
+    const shared = svgRef.current.querySelector('#SharedPath') as SVGPathElement;
+    const top = svgRef.current.querySelector('#TopPath') as SVGPathElement;
+    const bottom = svgRef.current.querySelector('#BottomPath') as SVGPathElement;
     
       if (!shared || !top || !bottom) return;
           
@@ -189,9 +235,9 @@ export default function CustomTrolleyProblem({ sectionLabel="The Trolley Problem
   
     loadStats();
 
-    const shared = document.querySelector('#SharedPath') as SVGPathElement
-    const top = document.querySelector('#TopPath') as SVGPathElement
-    const bottom = document.querySelector('#BottomPath') as SVGPathElement
+    const shared = svgRef.current?.querySelector('#SharedPath') as SVGPathElement
+    const top = svgRef.current?.querySelector('#TopPath') as SVGPathElement
+    const bottom = svgRef.current?.querySelector('#BottomPath') as SVGPathElement
 
     if (!shared || !top || !bottom) return
 
@@ -223,10 +269,11 @@ export default function CustomTrolleyProblem({ sectionLabel="The Trolley Problem
         }, 'move');
       
         tl.call(() => {
-          const victims = document.querySelector(
+          const victims = svgRef.current?.querySelector(
             track === 'bottom' ? '#default-victims' : '#alternate-victims'
           ) as SVGGElement;
-          const splat = document.querySelector(
+          
+          const splat = svgRef.current?.querySelector(
             track === 'bottom' ? '#splat-x5' : '#splat'
           ) as SVGGElement;
         
@@ -274,11 +321,11 @@ export default function CustomTrolleyProblem({ sectionLabel="The Trolley Problem
     setHasActivated(false);
   
     // Reset trolley visual
-    const shared = document.querySelector('#SharedPath') as SVGPathElement;
-    const topVictims = document.querySelector('#alternate-victims') as SVGGElement;
-    const bottomVictims = document.querySelector('#default-victims') as SVGGElement;
-    const splat = document.querySelector('#splat') as SVGGElement;
-    const splatX5 = document.querySelector('#splat-x5') as SVGGElement;
+    const shared = svgRef.current?.querySelector('#SharedPath') as SVGPathElement;
+    const topVictims = svgRef.current?.querySelector('#alternate-victims') as SVGGElement;
+    const bottomVictims = svgRef.current?.querySelector('#default-victims') as SVGGElement;
+    const splat = svgRef.current?.querySelector('#splat') as SVGGElement;
+    const splatX5 = svgRef.current?.querySelector('#splat-x5') as SVGGElement;    
   
     if (!trolleyRef.current || !shared || !topVictims || !bottomVictims || !splat || !splatX5) return;
     if (!trolleyRef.current) return;
@@ -306,17 +353,16 @@ export default function CustomTrolleyProblem({ sectionLabel="The Trolley Problem
   };
 
   return (
-    <section className="w-full flex items-center justify-center scroll-snap-start bg-white my-6">
-    <div className="max-w-3xl w-full text-center">
+    <div className="max-w-3xl w-full text-center my-[10px]">
       <h2 className="text-3xl font-semibold mb-2">{sectionLabel}</h2>
       <p>(Inspired by Neal Agarwal's <Link to="https://neal.fun/absurd-trolley-problems/" className="underline">Absurd Trolley Problems</Link>)</p>
       <div className="mt-4">
         <div className="space-y-4">
         <div text-black bg-white border-red>
-          <p>A trolley is heading towards <b>{numberOfBottomTrackVictims} {numberOfBottomTrackVictims == 1 ? "person" : "people"}</b> tied to the tracks.</p>
-          <p>You can pull a lever to divert it to another track, where <b>{numberOfTopTrackVictims} {numberOfTopTrackVictims == 1 ? "person" : "people"}</b> is tied up.</p>
+          <p className="text-lg">A trolley is heading towards <b>{numberOfBottomTrackVictims} {numberOfBottomTrackVictims == 1 ? "person" : "people"}</b> tied to the tracks. {bottomTrackVictimsAdditionalDescription}</p>
+          <p className="text-lg">You can pull a lever to divert it to another track, where <b>{numberOfTopTrackVictims} {numberOfTopTrackVictims == 1 ? "person" : "people"}</b> is tied up. {topTrackVictimsAdditionalDescription}</p>
           <br />
-          <p>What do you do?</p>
+          <p className="text-lg">{questionText}</p>
         </div>
 
         <div className="space-x-2">
@@ -351,12 +397,13 @@ export default function CustomTrolleyProblem({ sectionLabel="The Trolley Problem
               </p>
             ) :
             (
-              <p><br /><br /></p>
+              <p></p>
             )
           }
+          {track && postResponseText && <p>{postResponseText}</p>}
         </div>
         
-        <svg viewBox="0 0 800 400" className="w-full h-[400px]">
+        <svg viewBox="0 0 800 400" className="w-full h-full mt-[-2em]" ref={svgRef}>
             <clipPath id="ArtboardFrame">
             <rect height="400" width="800" x="0" y="0"/>
             </clipPath>
@@ -427,7 +474,7 @@ export default function CustomTrolleyProblem({ sectionLabel="The Trolley Problem
             <path d="M614.344 181.303C614.344 185.795 615.582 190.232 615.246 194.793C615.21 195.278 614.837 198.006 614.344 197.598" fill="none" opacity="1" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.36603"/>
             <path d="M608.425 182.15C608.684 181.774 609.192 181.747 609.603 181.694C610.968 181.518 612.333 181.342 613.699 181.173C615.884 180.902 618.073 180.672 620.263 180.456" fill="none" opacity="1" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.36603"/>
             </g>
-            <g id="trolley" ref={trolleyRef} transform='scale(0.5, 0.5)'>
+            <g id={trolleyId} ref={trolleyRef} transform='scale(0.5, 0.5)'>
             <path d="M55.7349 36.7064L222.949 74.4527L199.864 176.719L32.6496 138.973L55.7349 36.7064Z" fill="#ffffff" fillRule="nonzero" opacity="1" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="10"/>
             <path d="M28.711 156.421C30.8862 146.784 38.8883 140.381 46.5841 142.118C54.28 143.856 58.7553 153.076 56.5801 162.712C54.4048 172.348 46.4028 178.751 38.707 177.014C31.0111 175.277 26.5358 166.057 28.711 156.421Z" fill="#ffffff" fillRule="nonzero" opacity="1" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="10"/>
             <path d="M56.5801 162.712C58.7553 153.076 66.7574 146.672 74.4532 148.409C82.149 150.147 86.6243 159.367 84.4491 169.003C82.2739 178.639 74.2718 185.042 66.576 183.305C58.8802 181.568 54.4048 172.348 56.5801 162.712Z" fill="#ffffff" fillRule="nonzero" opacity="1" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="10"/>
@@ -445,13 +492,13 @@ export default function CustomTrolleyProblem({ sectionLabel="The Trolley Problem
             <g id="victims">
               <g id="default-victims">
                 {bottomVictimPoints.map((pt, i) => (
-                  <RenderTrolleyProblemVictim key={`bottom-${i}`} x={pt.x} y={pt.y} label={bottomTrackVictims?.[i]?.label} />
+                  <RenderTrolleyProblemVictim key={`bottom-${i}`} x={pt.x} y={pt.y} label={bottomTrackVictims?.[i]?.label} labelDirection='bottom'/>
                 ))}
               </g>
               <g id="alternate-victims">
                 {topVictimPoints.map((pt, i) => 
                   (
-                    <RenderTrolleyProblemVictim key={`top-${i}`} x={pt.x} y={pt.y - 5} label={topTrackVictims?.[i]?.label} />
+                    <RenderTrolleyProblemVictim key={`top-${i}`} x={pt.x} y={pt.y - 5} label={topTrackVictims?.[i]?.label} labelDirection='top' />
                   )
                 )}
               </g>
@@ -459,8 +506,7 @@ export default function CustomTrolleyProblem({ sectionLabel="The Trolley Problem
         </svg>
       </div>
       </div>
-        </div>
-      </section>
+      </div>
 
 
 
