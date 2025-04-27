@@ -33,7 +33,7 @@ def submit_response(response: ResponseIn, db: Session = Depends(get_db)):
             scenario=scenario_obj,
             option=option,
             session_id=response.session_id,
-            homework_participant_id=response.homework_participant_id,  # ✅
+            # homework_participant_id=response.homework_participant_id,  # ✅ TODO: FIX THIS
         )
         db.add(existing)
 
