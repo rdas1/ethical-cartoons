@@ -1,6 +1,5 @@
 import CustomTrolleyProblem from "@/components/CustomTrolleyProblem";
 import ModuleRestorePrompt from "@/components/ModuleRestorePrompt";
-import NavBar from "@/components/NavBar";
 import TransplantProblem from "@/components/TransplantProblem";
 import TrolleyVsTransplantDiscussionPanel from "@/components/TrolleyVsTransplantDiscussionPanel";
 import { useState, useEffect } from "react";
@@ -14,8 +13,6 @@ export default function IntroModule() {
 
   return (
     <div className="w-[100%] overflow-y-scroll scroll-snap-y scroll-snap-mandatory">
-      {/* NavBar */}
-        <NavBar />
 
         <ModuleRestorePrompt
           moduleName="IntroModule"
@@ -24,7 +21,10 @@ export default function IntroModule() {
 
       {/* Page 1: Trolley Problem */}
       <section className="w-full flex items-center justify-center scroll-snap-start bg-white my-6 p-6">
-        <CustomTrolleyProblem scenarioName="trolley" restore={
+        <CustomTrolleyProblem 
+                    scenarioName="trolley" 
+                    postResponseText="Scroll down to continue."
+                    restore={
                     restoredResponses?.trolley === "pullTheLever" || restoredResponses?.trolley === "doNothing"
                       ? restoredResponses.trolley === "pullTheLever" ? "top" : "bottom"
                       : null
@@ -59,7 +59,7 @@ export default function IntroModule() {
           <p className="text-lg">
               As some of you have pointed out, there are a few key differences between the Trolley and Transplant problems. These include:
           </p>
-          <h2 className="text-2xl font-semibold">Responsibility for the Harmful Conditions</h2>
+          <h2 className="text-2xl font-semibold">Your Responsibility for the Harmful Conditions</h2>
           <p className="text-lg">
               In the Trolley Problem, you are a bystander observing a terrible situation <b>that you did not cause</b>. You did not cause the trolley's brakes to fail; you did not tie anyone to the tracks. These harmful conditions were pre-existing.  Thus, even if you choose to redirect the trolley so that a single person dies, you weren't responsible for putting them in danger in the first place.
           </p>
@@ -68,12 +68,12 @@ export default function IntroModule() {
               In the Transplant Problem, by contrast, <b>you would be directly responsible for the healthy person's death</b> if you chose to operate. They were in no danger of dying when they arrived for a checkup. You put them in danger by choosing to perform a fatal transplant operation. 
           </p>
 
-          <h2 className="text-md font-semibold"><u>Complicating Question</u>: What if the healthy person were replaced with a terminally-ill cancer patient?</h2>              
+          <h2 className="text-md font-semibold"><u>Complicating Question</u>: What if instead of "healthy" person, a terminally-ill cancer patient walked in for a checkup?</h2>              
 
           {/* Difference 3 */}
           <h2 className="text-2xl font-semibold">Trust and Social Roles</h2>
           <p className="text-lg">
-             In the Trolley Problem, you’re just a bystander, and therefore not violating any social contract.
+             In the Trolley Problem, you’re just a bystander, and therefore not violating any explicit social contract.
           </p>
           <p className="text-lg">
              In the Transplant Problem, you’re a doctor, which means that you're subject to codes of medical ethics, including the Hippocratic Oath.

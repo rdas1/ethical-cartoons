@@ -2,7 +2,6 @@
 import CustomTrolleyProblem from "@/components/CustomTrolleyProblem";
 import DiscussionPanel from "@/components/DiscussionPanel";
 // import ModuleRestorePrompt from "@/components/ModuleRestorePrompt";
-import NavBar from "@/components/NavBar";
 import ScenarioQuestion from "@/components/ScenarioQuestion";
 import StickFigure from "@/components/StickFigure";
 import { useEffect } from "react";
@@ -21,7 +20,6 @@ export default function UtilitarianismModule() {
   
   return (
     <div className="w-[100%] overflow-y-scroll scroll-snap-y scroll-snap-mandatory">
-      <NavBar />
 
       {/* <ModuleRestorePrompt
         moduleName="Utilitarianism"
@@ -94,23 +92,26 @@ export default function UtilitarianismModule() {
           In this case, the <b>utilitarian choice</b> is less clear – or perhaps, <b>less palatable</b>.
         </p>
         <p className="text-lg">
-          If we assume that the scientist will cure cancer – or accelerate efforts to cure it –<br /> then the <b>utilitarian choice</b> might be to <b>do nothing</b> and kill the five oil lobbyists.
+          If we assume that the scientist will cure cancer – or accelerate efforts to cure it –<br /> then the utility-maximizing choice might be to <b>do nothing</b> and allow the five oil lobbyists to die.
         </p>
         <p className="text-lg">
-          But this is a very different choice than the one most of us made before,<br/> when we were just trying to save the most lives from death by trolley.
+          But this is a very different choice than the one most of us made before,<br/> when we were trying to save the most lives from death by trolley.
         </p>
         <p className="text-lg">
-          If we make this choice,<br/>how do we reconcile the discomfiting notion of allowing five people to die<br/> in order to save one person who is "worth more"?
+          If we choose to do nothing,<br/>how do we reconcile the discomfiting notion of allowing five people to die<br/> in order to save one person who is <b>"worth more"</b>?
         </p>
         <p className="text-lg">
           Making value judgements on human lives is a very uncomfortable thing to do –<br/>especially when we assign different values to different categories of people.
           <br/>(At its extreme, this idea can manifest in gross discrimination through <u><a href="https://en.wikipedia.org/wiki/Eugenics">eugenics</a></u>.)
         </p>
+        <p className="text-lg">
+          How can we ensure "fairness" in our utilitarian calculations?
+        </p>
       </section>
 
       <section className="scroll-snap-start my-[30vh] w-full flex flex-col items-center justify-center bg-white p-6 text-black text-center">
         <p className="text-3xl">
-          These questions are all examples of <br/><b>the utilitarian dilemma</b>.
+          These questions are all examples of <br/><b>the utilitarian dilemma</b>:
         </p>
         <br/>
         <br/>
@@ -126,13 +127,13 @@ export default function UtilitarianismModule() {
       {/* Panel 4: Poll about The Repugnant Conclusion */}
       <ScenarioQuestion
         scenarioName="repugnant-conclusion"
-        title="Challenge 1: Population Size"
+        title="Challenge 1: Population Size, Health, and Happiness"
         question={
           <>
             <div className="text-center">
-            Suppose there are two worlds:<br /><br />
+            Suppose there are two worlds:<br />
               <b>World A</b>: <br />1 billion healthy people, who each rate their happiness at 4 out 10.
-              <br /><br />
+              <br />
               <b>World B</b>: <br />40,000 sickly people, who each rate their happiness at 10 out of 10.
               <br /><br />
               <b>Which group is better off?</b>
@@ -151,7 +152,7 @@ export default function UtilitarianismModule() {
       <section className="scroll-snap-start w-[100%] flex flex-col items-center justify-center bg-white pt-12 px-6 text-black space-y-6">
       {/* Panel 5: Poll about Something */}
       <ScenarioQuestion
-        scenarioName="repugnant-conclusion"
+        scenarioName="labor-conditions"
         title="Challenge 2: Labor Conditions"
         question={
           <>
@@ -164,11 +165,11 @@ export default function UtilitarianismModule() {
           </>
         }
         options={[
-          { label: "Mass Production", value: "larger_population" },
-          { label: "Labor Conditions", value: "smaller_population" },
+          { label: "Mass Production", value: "largerPopulation" },
+          { label: "Labor Conditions", value: "smallerPopulation" },
         ]}
       />
-      <DiscussionPanel discussionSlug="repugnant-conclusion" placeholder="Which group is better off, and why?" />
+      <DiscussionPanel discussionSlug="repugnant-conclusion" placeholder="Which choice is more ethical, and why?" />
       </section>
 
       {/* Panel 5: Reflection/Transition */}

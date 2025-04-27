@@ -5,6 +5,7 @@ import { getSessionId } from "@/utils/session";
 import CommentItem from "./CommentItem";
 import { Label } from "./ui/label";
 import { Checkbox } from "./ui/checkbox";
+import { useHomeworkContext } from "@/contexts/homeworkContext";
 
 export type Comment = {
   id: number;
@@ -127,6 +128,8 @@ export default function DiscussionPanel({
   const [isAnonymous, setIsAnonymous] = useState(true);
   const sessionId = getSessionId();
 
+  const { homeworkParticipantId } = useHomeworkContext();
+
   const commentApiPath = `/comments/${discussionSlug}`;
   const replyApiPath = (parent_id: number) => `/comments/${discussionSlug}/reply/${parent_id}`;
   const reactApiPath = (id: number, reaction: "agree" | "disagree") => `/comments/${discussionSlug}/react/${id}/${reaction}`;
@@ -149,7 +152,8 @@ export default function DiscussionPanel({
           text: comment,
           session_id: sessionId,
           name: isAnonymous ? null : name || null,
-          is_anonymous: isAnonymous
+          is_anonymous: isAnonymous,
+          homework_participant_id: homeworkParticipantId ?? null,
         }),        
       });
       const newComment = await res.json();
@@ -173,7 +177,8 @@ export default function DiscussionPanel({
           session_id: sessionId,
           parent_id: parentId,
           name: isAnonymous ? null : name || null,
-          is_anonymous: isAnonymous
+          is_anonymous: isAnonymous,
+          homework_participant_id: homeworkParticipantId ?? null,
         }),
       });
       const reply = await res.json();

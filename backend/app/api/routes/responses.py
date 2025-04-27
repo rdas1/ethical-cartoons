@@ -32,13 +32,15 @@ def submit_response(response: ResponseIn, db: Session = Depends(get_db)):
         existing = Response(
             scenario=scenario_obj,
             option=option,
-            session_id=response.session_id
+            session_id=response.session_id,
+            homework_participant_id=response.homework_participant_id,  # ✅
         )
         db.add(existing)
 
     db.commit()
     db.refresh(existing)
     return {"message": "Response recorded"}
+
 
 @router.get("/stats/{scenario_name}")
 def get_stats(scenario_name: str, db: Session = Depends(get_db)):

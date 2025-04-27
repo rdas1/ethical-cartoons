@@ -1,8 +1,9 @@
 // src/components/ScenarioQuestion.tsx
 import { useState } from "react";
-import { apiFetch } from "@/utils/api";
+import { apiFetch, submitResponse } from "@/utils/api";
 import { getSessionId } from "@/utils/session";
 import { Button } from "./ui/button";
+import { useHomeworkContext } from "@/contexts/homeworkContext";
 
 type ScenarioQuestionProps = {
   scenarioName: string;
@@ -16,13 +17,15 @@ export default function ScenarioQuestion({ scenarioName, title, question, option
   const [selected, setSelected] = useState<string | null>(null);
   const [stats, setStats] = useState<Record<string, { percent: number; count: number }> | null>(null);
   const [total, setTotal] = useState<number>(0);
+  const { homeworkSession } = useHomeworkContext();
 
   const handleClick = async (value: string) => {
     setSelected(value);
-    await apiFetch("/submit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ scenario: scenarioName, decision: value, session_id: sessionId }),
+    await submitResponse({
+      scenario: scenarioName,
+      decision: value,
+      sessionId,
+      homeworkParticipantId: homeworkSession?.studentId || null, 
     });
     const res = await apiFetch(`/stats/${scenarioName}`);
     const data = await res.json();
@@ -35,7 +38,7 @@ export default function ScenarioQuestion({ scenarioName, title, question, option
         {title && (
           <h1 className="text-3xl font-semibold">{title}</h1>
         )}
-        <h2 className="text-2xl">{question}</h2>
+        <h2 className="text-lg">{question}</h2>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           {options.map((opt) => (
             <Button

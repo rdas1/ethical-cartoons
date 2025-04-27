@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Path, Depends
 from sqlalchemy.orm import Session
 from app.db.db import get_db
-from app.models.models import Response
+from app.models.models import Module, Response
 
 router = APIRouter()
 
@@ -19,3 +19,8 @@ def reset_database(db: Session = Depends(get_db)):
     db.query(Response).delete()
     db.commit()
     return {"message": "All responses deleted."}
+
+@router.get("/modules")
+def get_modules(db: Session = Depends(get_db)):
+    modules = db.query(Module).all()
+    return {"modules": [module.name for module in modules]}

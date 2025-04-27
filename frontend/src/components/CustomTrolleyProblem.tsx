@@ -3,10 +3,11 @@ import { gsap } from 'gsap'
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin'
 import { Button } from '@/components/ui/button'
 import { getSessionId } from '@/utils/session'
-import { apiFetch } from '@/utils/api'
+import { apiFetch, submitResponse } from '@/utils/api'
 import { Link } from 'react-router-dom'
 import StickFigure from './StickFigure'
 import React from 'react'
+import { useHomeworkContext } from '@/contexts/homeworkContext'
 
 type Victim = {
     id: string;
@@ -157,6 +158,7 @@ export default function CustomTrolleyProblem({
   } | null>(null);
 
   const sessionId = getSessionId();
+  const { homeworkSession } = useHomeworkContext();
 
   const svgRef = useRef<SVGSVGElement>(null);
   const trolleyRef = useRef<SVGSVGElement>(null)
@@ -219,20 +221,18 @@ export default function CustomTrolleyProblem({
 
     const decision = track === "top" ? "pullTheLever" : "doNothing";
   
-    apiFetch("/submit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        scenario: scenarioName,
-        decision,
-        session_id: sessionId,
-      }),
+    submitResponse({
+      scenario: scenarioName,
+      decision,
+      sessionId: sessionId,
+      homeworkParticipantId: homeworkSession?.studentId || null,
     })
       .then((res) => res.json())
       .then((data) => {
         setResponseId(data.id);
         loadStats();
       });
+      // loadStats(); // Pre-load stats for smoother UI after decision submission, will be upda
   
     const shared = svgRef.current?.querySelector('#SharedPath') as SVGPathElement
     const top = svgRef.current?.querySelector('#TopPath') as SVGPathElement

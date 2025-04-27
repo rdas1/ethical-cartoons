@@ -7,6 +7,7 @@ class CommentIn(BaseModel):
     session_id: str
     name: Optional[str] = None
     is_anonymous: bool = False
+    homework_participant_id: Optional[int] = None  # ✅ NEW
 
 class CommentOut(BaseModel):
     id: int

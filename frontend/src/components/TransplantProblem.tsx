@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import StickFigure from "@/components/StickFigure";
 import { getSessionId } from "@/utils/session";
-import { apiFetch } from "@/utils/api";
+import { apiFetch, submitResponse } from "@/utils/api";
+import { useHomeworkContext } from "@/contexts/homeworkContext";
 
 type TransplantProblemProps = {
   restore?: "sacrifice" | "spare" | null;
@@ -19,6 +20,7 @@ export default function TransplantProblem({ restore = null }: TransplantProblemP
   const [wasRestored, setWasRestored] = useState(!!restore);
 
   const sessionId = getSessionId();
+  const { homeworkSession } = useHomeworkContext();
 
   const loadStats = () => {
     apiFetch("/stats/transplant")
@@ -47,14 +49,11 @@ export default function TransplantProblem({ restore = null }: TransplantProblemP
   useEffect(() => {
     if (!decision || wasRestored) return;
 
-    apiFetch("/submit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        scenario: "transplant",
-        decision,
-        session_id: sessionId,
-      }),
+    submitResponse({
+      scenario: "transplant",
+      decision,
+      sessionId,
+      homeworkParticipantId: homeworkSession?.studentId || null,
     })
       .then((res) => res.json())
       .then((data) => {

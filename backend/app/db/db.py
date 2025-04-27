@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from app.models.models import Base, Module, Scenario, DecisionOption, DiscussionThread, Comment, CommentReaction
+from app.models.homework import HomeworkAssignment
 from typing import Generator
 
 engine = create_engine("sqlite:///responses.db")

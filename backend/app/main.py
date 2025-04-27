@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import router as api_router
 from app.db.db import init_db, seed_data
 from app.scripts import create_utilitarianism_module
+from dotenv import load_dotenv
+load_dotenv()
 
 app = FastAPI()
 
