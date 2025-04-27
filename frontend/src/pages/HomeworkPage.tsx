@@ -85,7 +85,7 @@ export default function HomeworkPage() {
   const handleLogout = () => {
     if (slug) {
       clearHomeworkToken(slug);
-      setHomeworkSession(null);
+      // setHomeworkSession(null);
       setVerifiedModuleName(null);
       navigate(`/`);
     }

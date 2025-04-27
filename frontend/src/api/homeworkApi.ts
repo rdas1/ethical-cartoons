@@ -6,11 +6,17 @@ async function createHomework(payload: {
   module_name: string;
   allowed_domains?: string[]; // ✅ allowed_domains, NOT assigned_emails anymore
 }) {
-  return await apiFetch("/homework/create", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
-}
+    const token = localStorage.getItem("educator_token");
+    if (!token) throw new Error("No educator token found");
+  
+    return await apiFetch("/homework/create", {
+      method: "POST",
+      body: JSON.stringify(payload),
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  }
 
 async function getHomework(slug: string) {
   return await apiFetch(`/homework/${slug}`, {
@@ -63,6 +69,12 @@ async function verifyHomeworkToken(slug: string, token: string) {
       body: JSON.stringify({ token }),
     });
   }
+
+async function getAvailableModules() {
+    return await apiFetch("/admin/modules", {
+        method: "GET",
+    });
+}
   
 export const homeworkApi = {
 createHomework,
@@ -73,5 +85,6 @@ verifyHomework,
 requestVerificationEmail,
 verifyHomeworkToken,
 generateTokens,
+getAvailableModules,
 };
   

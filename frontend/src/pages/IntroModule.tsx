@@ -127,10 +127,10 @@ export default function IntroModule() {
 
         <ul className="list-disc list-inside text-lg space-y-2">
           <li>
-            <b><a className="text-blue-600 underline" href="#/modules/utilitarian">Utilitarianism</a></b>: Should we always act to maximize overall happiness?
+            <b><a className="text-blue-600 underline" href="#/modules/utilitarianism">Utilitarianism</a></b>: Should we always act to maximize overall happiness?
           </li>
           <li>
-            <b><a className="text-blue-600 underline" href="#/modules/deontological">Deontology</a></b>: Are some actions simply wrong, regardless of the consequences?
+            <b><a className="text-blue-600 underline" href="#/modules/deontology">Deontology</a></b>: Are some actions simply wrong, regardless of the consequences?
           </li>
         </ul>
 

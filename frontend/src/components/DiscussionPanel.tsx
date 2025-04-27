@@ -128,7 +128,7 @@ export default function DiscussionPanel({
   const [isAnonymous, setIsAnonymous] = useState(true);
   const sessionId = getSessionId();
 
-  const { homeworkParticipantId } = useHomeworkContext();
+  const { homeworkSession } = useHomeworkContext();
 
   const commentApiPath = `/comments/${discussionSlug}`;
   const replyApiPath = (parent_id: number) => `/comments/${discussionSlug}/reply/${parent_id}`;
@@ -153,7 +153,7 @@ export default function DiscussionPanel({
           session_id: sessionId,
           name: isAnonymous ? null : name || null,
           is_anonymous: isAnonymous,
-          homework_participant_id: homeworkParticipantId ?? null,
+          homework_participant_id: homeworkSession?.studentId ?? null,
         }),        
       });
       const newComment = await res.json();
@@ -178,7 +178,7 @@ export default function DiscussionPanel({
           parent_id: parentId,
           name: isAnonymous ? null : name || null,
           is_anonymous: isAnonymous,
-          homework_participant_id: homeworkParticipantId ?? null,
+          homework_participant_id: homeworkSession?.studentId ?? null,
         }),
       });
       const reply = await res.json();

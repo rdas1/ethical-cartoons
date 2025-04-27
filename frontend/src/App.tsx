@@ -4,23 +4,30 @@ import IntroModule from "./pages/IntroModule";
 import UtilitarianismModule from "./pages/UtilitarianismModule";
 import HomeworkPage from "./pages/HomeworkPage";
 import { HomeworkProvider } from "./contexts/homeworkContext";
+import { EducatorProvider } from "./contexts/educatorContext";
 import NavBar from "./components/NavBar";
-import HomeworkAdminPage from "./pages/HomeworkAdminPage";
+import EducatorLoginPage from "@/pages/EducatorLoginPage";
+import EducatorDashboardPage from "@/pages/EducatorDashboardPage";
+import EducatorVerifyPage from "./pages/EducatorVerifyPage";
 
 
 function App() {
   return (
     <HomeworkProvider> {/* Wrap the whole app in HomeworkProvider for now */}
-      <Router>
-        <NavBar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/modules/intro" element={<IntroModule />} />
-          <Route path="/modules/utilitarianism" element={<UtilitarianismModule />} />
-          <Route path="/admin/homework" element={<HomeworkAdminPage />} />
-          <Route path="/homework/:slug" element={<HomeworkPage />} />
-        </Routes>
-      </Router>
+      <EducatorProvider>
+          <Router>
+            <NavBar />
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/modules/intro" element={<IntroModule />} />
+              <Route path="/modules/utilitarianism" element={<UtilitarianismModule />} />
+              <Route path="/homework/:slug" element={<HomeworkPage />} />
+              <Route path="/educators/login" element={<EducatorLoginPage />} />
+              <Route path="/educators/verify" element={<EducatorVerifyPage />} />
+              <Route path="/educators/dashboard" element={<EducatorDashboardPage />} />
+            </Routes>
+          </Router>
+        </EducatorProvider>
     </HomeworkProvider>
   );
 }

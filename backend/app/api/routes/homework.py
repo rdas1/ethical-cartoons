@@ -1,19 +1,17 @@
 import os
 from typing import List, Optional, Dict
-from fastapi import APIRouter, HTTPException, Depends, Path, Body
+from fastapi import APIRouter, HTTPException, Depends, Path, Body, Request
 from sqlalchemy.orm import Session
 from app.db.db import get_db
 from app.models.models import Module
 from app.models.homework import HomeworkAssignment, HomeworkParticipant, Student
-from app.utils.security import serializer
+from app.utils.security import serializer, get_current_admin_user
 from itsdangerous import BadSignature, SignatureExpired
 from pydantic import BaseModel, EmailStr
-from app.utils.security import get_current_admin_user
 from app.utils.email import send_verification_email
+from app.utils.constants import FRONTEND_BASE_URL
 
 router = APIRouter()
-
-FRONTEND_BASE_URL = os.environ.get("FRONTEND_BASE_URL", "http://localhost:5173/ethical-cartoons")
 
 class CreateHomeworkPayload(BaseModel):
     slug: str
@@ -36,30 +34,34 @@ class RequestVerificationPayload(BaseModel):
 class VerifyTokenPayload(BaseModel):
     token: str
 
+
 @router.post("/create")
 def create_homework(
     *,
-    db: Session = Depends(get_db),
+    request: Request,
     payload: CreateHomeworkPayload,
-    current_admin = Depends(get_current_admin_user)  # <-- add this
+    db: Session = Depends(get_db)
 ):
-    # 1. Validate Module exists
+    # ✅ Use the real educator authentication
+    admin_user = get_current_admin_user(request, db)
+
+    # Validate Module exists
     module = db.query(Module).filter_by(name=payload.module_name).first()
     if not module:
         raise HTTPException(status_code=400, detail=f"Module '{payload.module_name}' not found")
 
-    # 2. Check if HomeworkAssignment already exists
+    # Check if HomeworkAssignment already exists
     existing = db.query(HomeworkAssignment).filter_by(slug=payload.slug).first()
     if existing:
         raise HTTPException(status_code=400, detail=f"Homework with slug '{payload.slug}' already exists")
 
-    # 3. Create HomeworkAssignment
+    # Create HomeworkAssignment
     homework = HomeworkAssignment(
         slug=payload.slug,
         title=payload.title,
         module_id=module.id,
         allowed_domains=payload.allowed_domains or [],
-        admin_id=current_admin.id  # <-- 🛠 Attach the admin creating it
+        admin_id=admin_user.id  # ✅ ← THIS!
     )
     db.add(homework)
     db.commit()

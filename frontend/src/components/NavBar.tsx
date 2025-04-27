@@ -7,8 +7,8 @@ export default function NavBar() {
         <Link to="/">Ethical Cartoons</Link>
       </h1>
       <nav className="space-x-2 text-sm">
-        <Link to="/">Students</Link>
-        <Link to="/">Educators</Link>
+        {/* <Link to="/">Students</Link> */}
+        <Link to="/educators/login">Educators</Link>
       </nav>
     </header>
   );

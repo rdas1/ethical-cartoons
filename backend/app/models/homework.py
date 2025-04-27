@@ -2,16 +2,19 @@
 
 from sqlalchemy import JSON, Column, Integer, String, ForeignKey, Boolean, DateTime, UniqueConstraint
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from datetime import datetime, timezone
 from app.models.models import Base
 
 class AdminUser(Base):
     __tablename__ = "admin_users"
     id = Column(Integer, primary_key=True)
     email = Column(String, unique=True, nullable=False)
-    password_hash = Column(String, nullable=False)  # already discussed
+    name = Column(String, nullable=True)
+    verified = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
-    homeworks = relationship("HomeworkAssignment", back_populates="admin")
+    # Relationships
+    homework_assignments = relationship("HomeworkAssignment", back_populates="admin_user")
 
 class Student(Base):
     __tablename__ = "students"
@@ -43,6 +46,7 @@ class HomeworkAssignment(Base):
     module_id = Column(Integer, ForeignKey("modules.id"), nullable=False)
     admin_id = Column(Integer, ForeignKey("admin_users.id"), nullable=False)
     allowed_domains = Column(JSON, nullable=True)
+    created_at = Column(DateTime, default=datetime.now(timezone.utc))
 
-    admin = relationship("AdminUser", back_populates="homeworks")
+    admin_user = relationship("AdminUser", back_populates="homework_assignments")
     participants = relationship("HomeworkParticipant", back_populates="homework", cascade="all, delete-orphan")
