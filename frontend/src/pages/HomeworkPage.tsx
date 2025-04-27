@@ -150,7 +150,7 @@ export default function HomeworkPage() {
           </p>
           <br />
           <p className="text-lg">
-            <b></b>Your instructor will be able to see <br /><b>whether</b> you responded to each section, <br/>but they will <b>not</b> see <b>how</b> you responded.
+            <b></b>Your instructor will be able to see <br /><b>whether</b> you responded to each section, <br/>but <b>not how</b> exactly you responded.
           </p>
           <br />
           <p className="text-lg">

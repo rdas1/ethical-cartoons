@@ -5,8 +5,8 @@ import { Link } from "react-router-dom";
 const modules = [
   { title: "Introduction: Why Study Ethics?", href: "/modules/intro", disabled: false },
   { title: "Utilitarianism: Maximizing Happiness", href: "/modules/utilitarianism", disabled: false },
-  { title: "Deontology: Our Moral Duties", href: "/modules/deontology", disabled: false },
-  { title: "Virtue Ethics: Character Matters", href: "/modules/virtue", disabled: false },
+  { title: "Deontology: Our Moral Duties (coming soon!)", href: "/modules/deontology", disabled: true },
+  { title: "Virtue Ethics: Character Matters (coming soon!)", href: "/modules/virtue", disabled: true },
   { title: "More modules coming soon", href: "#", disabled: true },
 ];
 

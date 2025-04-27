@@ -1,4 +1,5 @@
 import { apiFetch } from "@/utils/api";
+import { getHomeworkToken } from "@/utils/homeworkStorage";
 
 async function createHomework(payload: {
   slug: string;
@@ -75,6 +76,15 @@ async function getAvailableModules() {
         method: "GET",
     });
 }
+
+async function getHomeworkStatsForParticipant(slug: string) {
+    return await apiFetch(`/homework/${slug}/participant_stats`, {
+        method: "GET",
+        headers: {
+            Authorization: `Bearer ${getHomeworkToken(slug) || ""}`,
+          },
+    });
+}
   
 export const homeworkApi = {
 createHomework,
@@ -86,5 +96,6 @@ requestVerificationEmail,
 verifyHomeworkToken,
 generateTokens,
 getAvailableModules,
+getHomeworkStatsForParticipant,
 };
   

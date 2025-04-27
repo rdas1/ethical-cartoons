@@ -22,10 +22,30 @@ export async function requestLogin(email: string) {
       },
     });
   }
+
+  async function deleteHomework(slug: string) {
+    return await apiFetch(`/homework/${slug}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("educator_token") || ""}`,
+      },
+    });
+  }
+
+  async function getHomeworkStats(slug: string) {
+    return await apiFetch(`/educators/homework/${slug}/stats`, {
+        method: "GET",
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("educator_token") || ""}`,
+          },
+    });
+}
   
 
 export const educatorApi = {
     requestLogin,
     verifyLogin,
     listHomeworks,
+    deleteHomework,
+    getHomeworkStats,
 };

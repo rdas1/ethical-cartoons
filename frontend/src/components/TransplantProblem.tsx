@@ -4,6 +4,7 @@ import StickFigure from "@/components/StickFigure";
 import { getSessionId } from "@/utils/session";
 import { apiFetch, submitResponse } from "@/utils/api";
 import { useHomeworkContext } from "@/contexts/homeworkContext";
+import { homeworkApi } from "@/api/homeworkApi";
 
 type TransplantProblemProps = {
   restore?: "sacrifice" | "spare" | null;
@@ -17,19 +18,44 @@ export default function TransplantProblem({ restore = null }: TransplantProblemP
     spare: { percent: number; count: number };
     total: number;
   } | null>(null);
+
+  const [homeworkStats, setHomeworkStats] = useState<{
+    sacrifice: { percent: number; count: number };
+    spare: { percent: number; count: number };
+    total: number;
+  } | null>(null);
+
   const [wasRestored, setWasRestored] = useState(!!restore);
 
   const sessionId = getSessionId();
   const { homeworkSession } = useHomeworkContext();
+  const isHomework = !!homeworkSession?.homeworkSlug;
 
   const loadStats = () => {
     apiFetch("/stats/transplant")
       .then((res) => res.json())
       .then((data) => {
         setStats(data);
-        console.log("Loaded transplant stats:", data);
+        console.log("Loaded transplant public stats:", data);
       })
-      .catch((err) => console.error("Failed to load stats", err));
+      .catch((err) => console.error("Failed to load public stats", err));
+
+    if (homeworkSession?.homeworkSlug) {
+      homeworkApi.getHomeworkStatsForParticipant(homeworkSession.homeworkSlug)
+        .then((res) => res.json())
+        .then((data) => {
+          const scenarioStats = data.scenarios?.transplant;
+          if (scenarioStats) {
+            setHomeworkStats({
+              sacrifice: scenarioStats.options?.["Perform the Operation"] || { percent: 0, count: 0 },
+              spare: scenarioStats.options?.["Do Nothing"] || { percent: 0, count: 0 },
+              total: scenarioStats.total_responses || 0,
+            });
+          }
+          console.log("Loaded transplant homework stats:", data);
+        })
+        .catch((err) => console.error("Failed to load homework participant stats", err));
+    }
   };
 
   const handleReset = () => {
@@ -41,11 +67,11 @@ export default function TransplantProblem({ restore = null }: TransplantProblemP
     setDecision(null);
     setResponseId(null);
     setStats(null);
+    setHomeworkStats(null);
     setWasRestored(false);
-    loadStats(); // Fetch latest stats after reset
+    loadStats();
   };
 
-  // User-initiated decision submission
   useEffect(() => {
     if (!decision || wasRestored) return;
 
@@ -64,7 +90,6 @@ export default function TransplantProblem({ restore = null }: TransplantProblemP
       .catch((err) => console.error("Failed to submit response", err));
   }, [decision]);
 
-  // Restore prior state if provided
   useEffect(() => {
     if (!restore) return;
     console.log("Restoring transplant decision:", restore);
@@ -87,71 +112,77 @@ export default function TransplantProblem({ restore = null }: TransplantProblemP
 
   return (
     <section className="h-screen w-full flex items-center justify-center scroll-snap-start bg-gray-50 my-6">
-        <div className="max-w-3xl w-full text-center">
-            <h2 className="text-3xl font-semibold mb-4">Scenario 2: The Transplant Problem</h2>
-            <div className="space-y-4 text-black">
+      <div className="max-w-3xl w-full text-center">
+        <h2 className="text-3xl font-semibold mb-4">Scenario 2: The Transplant Problem</h2>
+        <div className="space-y-4 text-black">
+          <p>
+            You're an emergency room doctor treating <b>five patients</b> who each need a different organ transplant to survive.
+          </p>
+
+          <svg viewBox="0 0 300 80" className="w-full h-[80px] mx-auto">
+            {[0, 1, 2, 3, 4].map((i) => (
+              <g key={i} transform={`translate(${i * 60}, 0)`}>
+                <StickFigure dead={decision === "spare"} emotion={decision === "sacrifice" ? "happy" : "distressed"} />
+              </g>
+            ))}
+          </svg>
+
+          <p>
+            <b>One healthy person</b> walks in for a routine checkup. They are a perfect organ-donor match for all five of the other patients.
+          </p>
+
+          <svg viewBox="0 0 36.399 69.454" className="w-full h-[80px] mx-auto">
+            <StickFigure dead={decision === "sacrifice"} emotion="happy" />
+          </svg>
+
+          <p>You can perform a fatal transplant operation on the healthy person, sacrificing them to save the five patients.</p>
+          <p>(Note that the healthy person has not consented to any procedure.)</p>
+
+          <div className="space-x-2">
+            <Button onClick={() => setDecision("sacrifice")} disabled={decision !== null}>
+              Perform the Operation
+            </Button>
+            <Button onClick={() => setDecision("spare")} disabled={decision !== null}>
+              Do Nothing
+            </Button>
+            {decision && (
+              <Button variant="outline" onClick={handleReset}>
+                Reset
+              </Button>
+            )}
+          </div>
+
+          <div>
+            {decision && stats && (
+              <div>
                 <p>
-                    You're an emergency room doctor treating <b>five patients</b> who each need a different organ transplant to survive.
+                  You chose to <b>{decision === "sacrifice" ? "sacrifice the healthy person" : "do nothing"}</b>,
+                  causing <b>{decision === "sacrifice" ? "1" : "5"} death{decision === "spare" ? "s" : ""}</b>.<br />
+                  {decision === "sacrifice"
+                    ? `${stats.sacrifice.percent}% of all respondents made the same choice. ${stats.spare.percent}% disagreed. (${stats.total} total responses)`
+                    : `${stats.spare.percent}% of all respondents made the same choice. ${stats.sacrifice.percent}% disagreed. (${stats.total} total responses)`}
                 </p>
 
-                {/* Five patients */}
-                <svg viewBox="0 0 300 80" className="w-full h-[80px] mx-auto">
-                    {[0, 1, 2, 3, 4].map((i) => (
-                    <g key={i} transform={`translate(${i * 60}, 0)`}>
-                        <StickFigure dead={decision === "spare"} emotion={decision === "sacrifice" ? "happy" : "distressed"} />
-                    </g>
-                    ))}
-                </svg>
-
-                <p>
-                    <b>One healthy person</b> walks in for a routine checkup. They are a perfect organ-donor match for all five of the other patients.
-                </p>
-
-                {/* Healthy person */}
-                <svg viewBox="0 0 36.399 69.454" className="w-full h-[80px] mx-auto">
-                    <StickFigure dead={decision === "sacrifice"} emotion="happy" />
-                </svg>
-
-                <p>You can perform a fatal transplant operation on the healthy person, sacrificing them to save the five patients.</p>
-                <p>(Note that the healthy person has not consented to any procedure.)</p>
-                <p>What do you do?</p>
-
-                {/* TODO: Add consent complication */}
-
-                <div className="space-x-2">
-                    <Button onClick={() => setDecision("sacrifice")} disabled={decision !== null}>
-                    Perform the Operation
-                    </Button>
-                    <Button onClick={() => setDecision("spare")} disabled={decision !== null}>
-                    Do Nothing
-                    </Button>
-                    {decision && (
-                    <Button variant="outline" onClick={handleReset}>
-                        Reset
-                    </Button>
+                {isHomework && homeworkStats && (
+                  <div>
+                    <br />
+                    {homeworkStats.total === 1 ? (
+                      <div><b>In your class,</b> you're the first student to respond to this scenario. Check back later for more stats!</div>
+                    ) : (
+                      <div>
+                        <b>In your class,</b> {decision === "sacrifice"
+                          ? `${homeworkStats.sacrifice.percent}% made the same choice. ${homeworkStats.spare.percent}% disagreed.`
+                          : `${homeworkStats.spare.percent}% made the same choice. ${homeworkStats.sacrifice.percent}% disagreed.`} 
+                        ({homeworkStats.total} total response{homeworkStats.total > 1 && "s"}).
+                      </div>
                     )}
-                </div>
-
-                <div>
-                  {stats && decision ? 
-                    (
-                      
-                        <p>
-                        You chose to <b>{decision === "sacrifice" ? "sacrifice the healthy person" : "do nothing"}</b>,
-                        causing <b>{decision === "sacrifice" ? "1" : "5"} death{decision === "spare" ? "s" : ""}</b>.<br />
-                        {decision === "sacrifice"
-                            ? `${stats.sacrifice.percent}% of respondents made the same choice. ${stats.spare.percent}% disagreed. (${stats.total} total responses)`
-                            : `${stats.spare.percent}% of respondents made the same choice. ${stats.sacrifice.percent}% disagreed. (${stats.total} total responses)`}
-                        </p>
-                    )
-                    :
-                    (
-                      <p><br /><br /></p>
-                    )
-                  }
-                </div>
-            </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
+      </div>
     </section>
   );
 }

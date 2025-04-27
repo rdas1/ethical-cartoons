@@ -1,7 +1,7 @@
 from itsdangerous import URLSafeTimedSerializer
 import os
 from fastapi import Request, HTTPException, Depends
-from app.models.homework import AdminUser
+from app.models.homework import AdminUser, Student
 from sqlalchemy.orm import Session
 
 
@@ -25,6 +25,23 @@ def get_current_admin_user(request: Request, db: Session) -> AdminUser:
         raise HTTPException(status_code=403, detail="Educator not verified")
 
     return admin
+
+def get_current_student(request: Request, db: Session) -> Student:
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing or invalid token")
+    token = auth_header.split("Bearer ")[-1]
+
+    try:
+        email = serializer.loads(token)
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+
+    student = db.query(Student).filter_by(email=email).first()
+    if not student:
+        raise HTTPException(status_code=403, detail="Student not found")
+
+    return student
 
 def generate_homework_link(email: str, slug: str, base_url: str) -> str:
     """

@@ -9,6 +9,7 @@ import NavBar from "./components/NavBar";
 import EducatorLoginPage from "@/pages/EducatorLoginPage";
 import EducatorDashboardPage from "@/pages/EducatorDashboardPage";
 import EducatorVerifyPage from "./pages/EducatorVerifyPage";
+import {Toaster} from 'sonner'
 
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
     <HomeworkProvider> {/* Wrap the whole app in HomeworkProvider for now */}
       <EducatorProvider>
           <Router>
+            <Toaster />
             <NavBar />
             <Routes>
               <Route path="/" element={<Home />} />

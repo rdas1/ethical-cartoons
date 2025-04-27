@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom'
 import StickFigure from './StickFigure'
 import React from 'react'
 import { useHomeworkContext } from '@/contexts/homeworkContext'
+import { homeworkApi } from '@/api/homeworkApi'
 
 type Victim = {
     id: string;
@@ -157,8 +158,16 @@ export default function CustomTrolleyProblem({
     total: number;
   } | null>(null);
 
+  const [homeworkStats, setHomeworkStats] = useState<{
+    top: { percent: number; count: number };
+    bottom: { percent: number; count: number };
+    total: number;
+  } | null>(null);
+
   const sessionId = getSessionId();
   const { homeworkSession } = useHomeworkContext();
+
+  const isHomework = !!homeworkSession?.homeworkSlug;
 
   const svgRef = useRef<SVGSVGElement>(null);
   const trolleyRef = useRef<SVGSVGElement>(null)
@@ -171,12 +180,12 @@ export default function CustomTrolleyProblem({
     apiFetch(`/stats/${scenarioName}`)
       .then((res) => {
         if (!res.ok) {
-          throw new Error("Failed to fetch stats");
+          throw new Error("Failed to fetch public stats");
         }
         return res.json();
       })
       .then((data) => {
-        console.log("Loaded trolley stats:", data); // ✅ Debugging statement
+        console.log("Loaded trolley public stats:", data); // ✅ Debugging statement
         setStats({
           top: data.pullTheLever,
           bottom: data.doNothing,
@@ -184,9 +193,35 @@ export default function CustomTrolleyProblem({
         });
       })
       .catch((err) => {
-        console.error("Failed to load trolley stats:", err);
+        console.error("Failed to load trolley public stats:", err);
       });
+  
+    if (homeworkSession?.homeworkSlug) {
+      // Fetch homework participant stats
+      homeworkApi.getHomeworkStatsForParticipant(homeworkSession.homeworkSlug)
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error("Failed to fetch homework participant stats");
+          }
+          return res.json();
+        })
+        .then((data) => {
+          console.log("Loaded trolley homework stats:", data);
+          const scenarioStats = data.scenarios?.[scenarioName];
+          if (scenarioStats) {
+            setHomeworkStats({
+              top: scenarioStats.options?.["Pull the Lever"] || { percent: 0, count: 0 },
+              bottom: scenarioStats.options?.["Do Nothing"] || { percent: 0, count: 0 },
+              total: scenarioStats.total_responses || 0,
+            });
+          }
+        })
+        .catch((err) => {
+          console.error("Failed to load homework participant stats:", err);
+        });
+    }
   };
+  
 
   const activateTrack = (t: 'top' | 'bottom') => {
     setTrack(t);
@@ -388,15 +423,31 @@ export default function CustomTrolleyProblem({
         <div>
           {track && stats ? 
             (
+              <div>
               <p>
                 You chose to <b>{track === "top" ? "pull the lever" : "do nothing"}</b>,
                 causing <b>{track === "top" ? "1" : "5"} death{track === "bottom" ? "s" : ""}</b>.<br />
-                {`${stats[track].percent}% of respondents made the same choice. ${stats[track === "top" ? "bottom" : "top"].percent}% disagreed. (${stats.total} total responses)`}
-                {postResponseText && <p><br/>{postResponseText}</p>}
+                {`${stats[track].percent}% of all respondents made the same choice. ${stats[track === "top" ? "bottom" : "top"].percent}% disagreed. (${stats.total} total responses)`}
               </p>
+              {isHomework && homeworkStats && (
+                <div>
+                  <p>
+                    <br/>
+                    {homeworkStats.total == 1 ? (
+                      <div><b>In your class,</b> you're the first student to respond to this scenario. Check back later for more stats!</div>
+                    ) : (
+                      <div>
+                      <b>In your class,</b> {homeworkStats[track].percent}% of students made the same choice. {homeworkStats[track === "top" ? "bottom" : "top"].percent}% of students disagreed.  ({homeworkStats.total} total response{homeworkStats.total > 1 && `s`}).<br />
+                      </div>
+                    )}
+                  </p>
+                </div>
+              )}
+              {postResponseText && <p><br/>{postResponseText}</p>}
+              </div>
             ) :
             (
-              <p></p>
+              <br/>
             )
           }
           

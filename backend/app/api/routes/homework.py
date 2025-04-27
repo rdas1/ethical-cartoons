@@ -3,7 +3,7 @@ from typing import List, Optional, Dict
 from fastapi import APIRouter, HTTPException, Depends, Path, Body, Request
 from sqlalchemy.orm import Session
 from app.db.db import get_db
-from app.models.models import Module
+from app.models.models import Module, Response
 from app.models.homework import HomeworkAssignment, HomeworkParticipant, Student
 from app.utils.security import serializer, get_current_admin_user
 from itsdangerous import BadSignature, SignatureExpired
@@ -226,3 +226,80 @@ def request_verification_email(
     send_verification_email(email, magic_link)
 
     return {"message": "Verification email sent"}
+
+from app.utils.security import get_current_student  # 👈 import at top if you haven't yet
+
+@router.get("/{slug}/participant_stats")
+def get_homework_participant_stats(
+    slug: str = Path(...),
+    db: Session = Depends(get_db),
+    request: Request = None,
+):
+    # ✅ Authenticate student
+    student = get_current_student(request, db)
+
+    # ✅ Find the homework assignment
+    homework = db.query(HomeworkAssignment).filter_by(slug=slug).first()
+    if not homework:
+        raise HTTPException(status_code=404, detail="Homework assignment not found")
+
+    # ✅ Check if student is a verified participant in this homework
+    participant = db.query(HomeworkParticipant).filter_by(
+        homework_id=homework.id,
+        student_id=student.id,
+        verified=True,
+    ).first()
+
+    if not participant:
+        raise HTTPException(status_code=403, detail="You are not a participant in this homework")
+
+    # ✅ Get all verified participants' student_ids
+    participant_student_ids = [
+        p.student_id for p in homework.participants if p.verified and p.student_id is not None
+    ]
+
+    if not participant_student_ids:
+        return {"scenarios": {}}
+
+    # ✅ Find scenarios under the same module
+    scenarios = db.query(Module).filter_by(id=homework.module_id).first().scenarios
+
+    stats = {}
+
+    for scenario in scenarios:
+        # Fetch all responses for this scenario by students in this homework
+        responses = db.query(Response).filter(
+            Response.scenario_id == scenario.id,
+            Response.homework_participant_id.in_(
+                db.query(HomeworkParticipant.id).filter(
+                    HomeworkParticipant.student_id.in_(participant_student_ids),
+                    HomeworkParticipant.homework_id == homework.id
+                )
+            )
+        ).all()
+
+        option_counts = {}
+        for response in responses:
+            label = response.option.label
+            option_counts[label] = option_counts.get(label, 0) + 1
+
+        total = sum(option_counts.values())
+
+        if total > 0:
+            stats[scenario.name] = {
+                "options": {
+                    label: {
+                        "percent": round(100 * count / total, 1),
+                        "count": count,
+                    }
+                    for label, count in option_counts.items()
+                },
+                "total_responses": total,
+            }
+        else:
+            stats[scenario.name] = {
+                "options": {},
+                "total_responses": 0,
+            }
+
+    return {"scenarios": stats}

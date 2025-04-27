@@ -34,15 +34,29 @@ class DecisionOption(Base):
     scenario = relationship("Scenario", back_populates="options")
     __table_args__ = (UniqueConstraint("scenario_id", "label", name="unique_option_per_scenario"),)
 
+from sqlalchemy import Column, Integer, ForeignKey, String, UniqueConstraint
+from sqlalchemy.orm import relationship
+
 class Response(Base):
     __tablename__ = "responses"
     id = Column(Integer, primary_key=True)
     scenario_id = Column(Integer, ForeignKey("scenarios.id"))
-    option_id = Column(Integer, ForeignKey("decision_options.id"))
-    session_id = Column(String, index=True)
+    option_id   = Column(Integer, ForeignKey("decision_options.id"))
+    session_id  = Column(String, index=True)
+
+    homework_participant_id = Column(
+        Integer,
+        ForeignKey("homework_participants.id"),
+        nullable=True
+    )
+
     scenario = relationship("Scenario", back_populates="responses")
-    option = relationship("DecisionOption")
-    __table_args__ = (UniqueConstraint("scenario_id", "session_id", name="unique_response_per_session"),)
+    option   = relationship("DecisionOption")
+
+    __table_args__ = (
+        UniqueConstraint("scenario_id", "session_id", name="unique_response_per_session"),
+    )
+
 
 class DiscussionThread(Base):
     __tablename__ = "discussion_threads"

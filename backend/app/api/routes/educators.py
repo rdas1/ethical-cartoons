@@ -1,14 +1,16 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Path, Request
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, EmailStr
 from app.db.db import get_db
-from app.models.homework import AdminUser, HomeworkAssignment
-from app.utils.security import serializer
+from app.models.homework import AdminUser, HomeworkAssignment, HomeworkParticipant
+from app.utils.security import get_current_admin_user, serializer
 from app.utils.email import send_email
-from app.utils.constants import FRONTEND_BASE_URL
-from app.models.models import Module
+# from app.utils.constants import FRONTEND_BASE_URL
+from app.models.models import Module, Response, Scenario
 
 router = APIRouter()
+
+FRONTEND_BASE_URL = "http://localhost:5173/ethical-cartoons"  # TODO: Adjust for production
 
 class RequestAdminLoginPayload(BaseModel):
     email: EmailStr
@@ -97,3 +99,116 @@ def list_homeworks(
             for hw in homeworks
         ]
     }
+
+@router.get("/homework/{slug}/details")
+def get_homework_details(
+    slug: str = Path(...),
+    db: Session = Depends(get_db),
+    request: Request = None,
+):
+    # ✅ Authenticate educator
+    admin_user = get_current_admin_user(request, db)
+
+    # ✅ Find the homework assignment
+    homework = db.query(HomeworkAssignment).filter_by(slug=slug).first()
+    if not homework:
+        raise HTTPException(status_code=404, detail="Homework assignment not found")
+    
+    # ✅ Authorization check: must be the same admin
+    if homework.admin_id != admin_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to access this homework")
+
+    module = db.query(Module).filter_by(id=homework.module_id).first()
+    if not module:
+        module = None
+
+    # ✅ Fetch participants
+    participants = db.query(HomeworkParticipant).filter_by(homework_id=homework.id).all()
+
+    # ✅ Prepare response
+    return {
+        "slug": homework.slug,
+        "title": homework.title,
+        "module_name": module.name if module else "Unknown Module",
+        "allowed_domains": homework.allowed_domains,
+        "created_at": homework.created_at.isoformat(),
+        "participants": [
+            {
+                "email": p.student.email,
+                "name": p.student.name,
+                "verified": p.verified
+            }
+            for p in participants
+            if p.student  # safety check
+        ]
+    }
+
+@router.get("/homework/{slug}/stats")
+def get_homework_stats(
+    slug: str = Path(...),
+    db: Session = Depends(get_db),
+    request: Request = None,
+):
+    # ✅ Authenticate educator
+    admin_user = get_current_admin_user(request, db)
+
+    # ✅ Find the homework assignment
+    homework = db.query(HomeworkAssignment).filter_by(slug=slug).first()
+    if not homework:
+        raise HTTPException(status_code=404, detail="Homework assignment not found")
+    
+    # ✅ Authorization check
+    if homework.admin_id != admin_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to access this homework")
+
+    # ✅ Get all verified participants' student_ids
+    participant_student_ids = [
+        p.student_id for p in homework.participants if p.verified and p.student_id is not None
+    ]
+
+    if not participant_student_ids:
+        return {"scenarios": {}}
+
+    # ✅ Find scenarios under the same module
+    scenarios = db.query(Scenario).filter_by(module_id=homework.module_id).all()
+
+    stats = {}
+
+    for scenario in scenarios:
+        # Fetch all responses for this scenario by students in this homework
+        responses = db.query(Response).filter(
+            Response.scenario_id == scenario.id,
+            Response.homework_participant_id.in_(
+                db.query(HomeworkParticipant.id).filter(
+                    HomeworkParticipant.student_id.in_(participant_student_ids),
+                    HomeworkParticipant.homework_id == homework.id
+                )
+            )
+        ).all()
+
+        option_counts = {}
+        for response in responses:
+            label = response.option.label
+            option_counts[label] = option_counts.get(label, 0) + 1
+
+        total = sum(option_counts.values())
+
+        if total > 0:
+            stats[scenario.name] = {
+                "options": {
+                    label: {
+                        "percent": round(100 * count / total, 1),
+                        "count": count,
+                    }
+                    for label, count in option_counts.items()
+                },
+                "total_responses": total,
+            }
+        else:
+            stats[scenario.name] = {
+                "options": {},
+                "total_responses": 0,
+            }
+
+    return {"scenarios": stats}
+    

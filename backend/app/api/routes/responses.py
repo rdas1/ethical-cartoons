@@ -17,13 +17,20 @@ def get_scenario_by_name(db: Session, name: str) -> Scenario:
 @router.post("/submit", response_model=ResponseOut)
 def submit_response(response: ResponseIn, db: Session = Depends(get_db)):
     scenario_obj = get_scenario_by_name(db, response.scenario)
-    option = db.query(DecisionOption).filter_by(scenario_id=scenario_obj.id, label=response.decision).first()
+    option = db.query(DecisionOption).filter_by(
+        scenario_id=scenario_obj.id,
+        label=response.decision
+    ).first()
     if not option:
         raise HTTPException(status_code=400, detail="Invalid decision")
 
-    existing = db.query(Response).filter(
-        Response.scenario == scenario_obj,
-        Response.session_id == response.session_id
+    # Use the incoming homework_participant_id (or None)
+    hp_id = response.homework_participant_id
+
+    existing = db.query(Response).filter_by(
+        scenario_id=scenario_obj.id,
+        session_id=response.session_id,
+        homework_participant_id=hp_id
     ).first()
 
     if existing:
@@ -33,7 +40,7 @@ def submit_response(response: ResponseIn, db: Session = Depends(get_db)):
             scenario=scenario_obj,
             option=option,
             session_id=response.session_id,
-            # homework_participant_id=response.homework_participant_id,  # ✅ TODO: FIX THIS
+            homework_participant_id=hp_id
         )
         db.add(existing)
 

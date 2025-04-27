@@ -130,7 +130,7 @@ export default function IntroModule() {
             <b><a className="text-blue-600 underline" href="#/modules/utilitarianism">Utilitarianism</a></b>: Should we always act to maximize overall happiness?
           </li>
           <li>
-            <b><a className="text-blue-600 underline" href="#/modules/deontology">Deontology</a></b>: Are some actions simply wrong, regardless of the consequences?
+            <b><span className="text-blue-600 underline">Deontology</span></b>: Are some actions simply wrong, regardless of the consequences? (This module is coming soon!)
           </li>
         </ul>
 
