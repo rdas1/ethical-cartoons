@@ -66,7 +66,7 @@ export default function EducatorDashboardPage() {
             variant="destructive"
             onClick={async () => {
               await educatorApi.deleteHomework(slug);
-              toast.dismiss(t.id);
+              toast.dismiss(t);
               fetchHomeworks();
               toast.success("Homework deleted.");
             }}
@@ -76,7 +76,7 @@ export default function EducatorDashboardPage() {
   
           <Button
             variant="outline"
-            onClick={() => toast.dismiss(t.id)}
+            onClick={() => toast.dismiss(t)}
           >
             Cancel
           </Button>
