@@ -5,12 +5,12 @@ from app.db.db import get_db
 from app.models.homework import AdminUser, HomeworkAssignment, HomeworkParticipant
 from app.utils.security import get_current_admin_user, serializer
 from app.utils.email import send_email
-# from app.utils.constants import FRONTEND_BASE_URL
+from app.utils.constants import FRONTEND_BASE_URL
 from app.models.models import Module, Response, Scenario
 
 router = APIRouter()
 
-FRONTEND_BASE_URL = "http://localhost:5173/ethical-cartoons"  # TODO: Adjust for production
+# FRONTEND_BASE_URL = "http://localhost:5173/ethical-cartoons"  # TODO: Adjust for production
 
 class RequestAdminLoginPayload(BaseModel):
     email: EmailStr

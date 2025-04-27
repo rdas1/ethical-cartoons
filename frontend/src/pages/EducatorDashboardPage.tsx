@@ -18,7 +18,7 @@ export default function EducatorDashboardPage() {
   const [detailModalSlug, setDetailModalSlug] = useState<string | null>(null);
   const [editingHomework, setEditingHomework] = useState<any>(null);
 
-    const FRONTEND_BASE_URL = import.meta.env.VITE_FRONTEND_BASE_URL || "http://localhost:5173/ethical-cartoons";
+  const FRONTEND_BASE_URL = import.meta.env.VITE_FRONTEND_BASE_URL || "http://localhost:5173/ethical-cartoons";
 
   const fetchHomeworks = async () => {
     const res = await educatorApi.listHomeworks();
