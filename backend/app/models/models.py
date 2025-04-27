@@ -92,6 +92,12 @@ class Comment(Base):
     name = Column(String, nullable=True)
     is_anonymous = Column(Boolean, default=False)
 
+    homework_participant_id = Column(
+        Integer,
+        ForeignKey("homework_participants.id"),
+        nullable=True
+    )
+
 class CommentReaction(Base):
     __tablename__ = "comment_reactions"
     id = Column(Integer, primary_key=True)

@@ -210,8 +210,8 @@ export default function CustomTrolleyProblem({
           const scenarioStats = data.scenarios?.[scenarioName];
           if (scenarioStats) {
             setHomeworkStats({
-              top: scenarioStats.options?.["Pull the Lever"] || { percent: 0, count: 0 },
-              bottom: scenarioStats.options?.["Do Nothing"] || { percent: 0, count: 0 },
+              top: scenarioStats.options?.["pullTheLever"] || { percent: 0, count: 0 },
+              bottom: scenarioStats.options?.["doNothing"] || { percent: 0, count: 0 },
               total: scenarioStats.total_responses || 0,
             });
           }

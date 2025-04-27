@@ -22,7 +22,8 @@ export default function IntroModule() {
       {/* Page 1: Trolley Problem */}
       <section className="w-full flex items-center justify-center scroll-snap-start bg-white my-6 p-6">
         <CustomTrolleyProblem 
-                    scenarioName="trolley" 
+                    scenarioName="trolley"
+                    sectionLabel="Scenario 1: The Trolley Problem" 
                     postResponseText="Scroll down to continue."
                     restore={
                     restoredResponses?.trolley === "pullTheLever" || restoredResponses?.trolley === "doNothing"
